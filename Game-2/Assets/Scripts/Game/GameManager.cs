@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using TriInspector;
+using UnityEngine.Rendering;
 
 public class GameManager : MonoBehaviour
 {
@@ -73,8 +74,8 @@ public class GameManager : MonoBehaviour
 
 
 
-    public Action<float> someValue;
-    public Action somethingHappens;
+    //public Action<float> someValue;
+    //public Action somethingHappens;
     /*
 
     // SET ACTION EVENT
@@ -99,6 +100,12 @@ public class GameManager : MonoBehaviour
     }
 
     */
+
+    private void Start()
+    {
+        CameraSwitcher.Instance.SwitchToGameplay();
+        //CameraSwitcher.Instance.SwitchToOnShoulder();
+    }
 
     private void Awake()
     {
