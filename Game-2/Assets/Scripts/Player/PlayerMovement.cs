@@ -7,7 +7,14 @@ public class PlayerMovement : MonoBehaviour
     private bool isCrouching = true;  // set false, if Game Over
 
     [SerializeField] private float speed;
+    [SerializeField] private float pushPower;
     //[SerializeField] private float rotationSpeed;
+
+
+    // GRAVITY
+    [SerializeField] private float gravity = -20f;
+    private float yVelocity;
+
 
     public void SetMovement(Vector2 dir)
     {
@@ -18,7 +25,29 @@ public class PlayerMovement : MonoBehaviour
         isCrouching = crouchValue;
     }
 
-    void FixedUpdate()
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        Rigidbody rb = hit.collider.attachedRigidbody;  // get rigidBody of colliding object
+
+        if (rb == null || rb.isKinematic)
+            return;
+
+        if (hit.moveDirection.y < -0.3f)
+            return;
+
+        // Is Object a TreeTrunk?
+        if (hit.collider.GetComponent<TreeTrunk>() == null)
+            return;
+
+        Vector3 pushDir = new Vector3(hit.moveDirection.x, 0, hit.moveDirection.z);
+        rb.AddForceAtPosition(
+            pushDir * pushPower,
+            hit.point,
+            ForceMode.Impulse
+        );
+    }
+
+    void Update()
     {
         // ------- ANIMATOR -------
         /*
@@ -34,6 +63,15 @@ public class PlayerMovement : MonoBehaviour
         dir.Normalize();  // normalize for better speed handling
 
         Vector3 move = dir * speed * Time.deltaTime;  // calculate movement
+
+        // set small downwards force when grounded and moving down
+        if(controller.isGrounded && yVelocity < 0)
+            yVelocity = -2f;
+
+        yVelocity += gravity * Time.deltaTime;  // increase velocity by gravity per frame
+
+        move.y = yVelocity;
+
         //transform.position = transform.position + move;
         controller.Move(move);  // move with character controller (animator)
     }

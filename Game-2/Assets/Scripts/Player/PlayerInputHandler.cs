@@ -8,7 +8,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     [SerializeField] private PlayerMovement playerMovement;
 
-     [SerializeField] private InputActionAsset actions;
+    [SerializeField] private InputActionAsset actions;
     [SerializeField] private string actionMapName = "Player";
 
     private InputActionMap inputMap;
@@ -39,11 +39,18 @@ public class PlayerInputHandler : MonoBehaviour
         //pickUpPlayerAction = inputMap.FindAction("PickUpPlayer");  // can be null for Player2 (Tiny)
     }
 
+    void Update()
+    {
+        InteractionCollisionDetection();
+    }
+
     private void OnGameStateChange(GameState newState)
     {
-        // set isControllable=false, when Game Over
-        if(newState == GameState.Lose)
+        // set isControllable=false, when Game Over/Won/Paused
+        if(newState != GameState.Intro && newState != GameState.Playing)
             isControllable = false;
+        else
+            isControllable = true;
     }
 
     private void OnEnable()
@@ -95,15 +102,42 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if(!isControllable)
             return;
+
+        Debug.Log("Interaction wanted");
         
-        CollisionDetection();
+        StartInteraction();  // returns true, if interaction was started
     }
 
     public Transform interactionCollider;  // collider for interaction
     public LayerMask interactionLayer;  // to which layer the collision is restricted
 
+    private int lastHitColliderCount = 0;
+
     // Collision Detection for Interactable Game Objects nearby
-    private void CollisionDetection()
+    private void InteractionCollisionDetection()
+    {
+        Collider[] hitColliders = Physics.OverlapBox(interactionCollider.position,
+            interactionCollider.localScale,
+            Quaternion.identity,
+            interactionLayer);
+
+        // deactivate indicator, when none are in radius
+        if(hitColliders.Length == 0 && lastHitColliderCount != hitColliders.Length)
+            GameManager.Instance?.InteractionStatusChanged.Invoke(null);
+
+        lastHitColliderCount = hitColliders.Length;
+        for (int i = 0; i < hitColliders.Length; i++)
+        {
+            // execute interaction
+            IInteractable interactable = hitColliders[i].GetComponentInChildren<IInteractable>();
+            if (interactable != null)
+            {
+                // set transform of interactable for UI Indicator
+                GameManager.Instance?.InteractionStatusChanged.Invoke(hitColliders[i].transform);
+            }
+        }
+    }
+    private bool StartInteraction()
     {
         Collider[] hitColliders = Physics.OverlapBox(interactionCollider.position,
             interactionCollider.localScale,
@@ -120,7 +154,9 @@ public class PlayerInputHandler : MonoBehaviour
                 interactable.Interact(gameObject);  // parameter = player object for interaction
             }
             
-            return;
+            return true;  // interaction started
         }
+        
+        return false;
     }
 }

@@ -2,12 +2,19 @@ using System;
 using UnityEngine;
 using TriInspector;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
 
     public static GameManager Instance;
-    GameState gameState = GameState.Park;  // set to first game state
+    private GameState gameState = GameState.Intro;  // set to first game state
+    private GameState lastGameState = GameState.Intro;  // when pausing
+
+    public GameState GetGameState()
+    {
+        return gameState;
+    }
     public Action<GameState> GameStateChanged;
 
     [Unit("sec")] [SerializeField] private float gameTimer;
@@ -28,6 +35,8 @@ public class GameManager : MonoBehaviour
         SanityUpdated?.Invoke(sanity);
     }
 
+    public Action<Transform> InteractionStatusChanged;  // transform of interactable object
+
     private bool arePlayersHoldingHands;
 
     [Unit("sec")]
@@ -46,17 +55,23 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        usedTime += Time.deltaTime;
-        GameTimerUpdated?.Invoke(usedTime, gameTimer);
+        // don't update timer, when paused/game over/won
+        if(gameState == GameState.Intro || gameState == GameState.Playing) {
+            usedTime += Time.deltaTime;
+            GameTimerUpdated?.Invoke(usedTime, gameTimer);
+        }
 
-        // if players are not holding hands, do sanity meter updates
-        if(!arePlayersHoldingHands) {
-            sanityUpdateTimer += Time.deltaTime;
+        // don't update timer, when paused/game over/won/intro-level
+        if(gameState == GameState.Playing) {
+            // if players are not holding hands, do sanity meter updates
+            if(!arePlayersHoldingHands) {
+                sanityUpdateTimer += Time.deltaTime;
 
-            if (sanityUpdateTimer >= sanityUpdateInterval)  // check if given time interval has passed
-            {
-                sanityUpdateTimer = 0f;
-                DecreaseSanity();  //decrease sanity by given step
+                if (sanityUpdateTimer >= sanityUpdateInterval)  // check if given time interval has passed
+                {
+                    sanityUpdateTimer = 0f;
+                    DecreaseSanity();  //decrease sanity by given step
+                }
             }
         }
 
@@ -64,8 +79,28 @@ public class GameManager : MonoBehaviour
         if(sanity < sanityLimit || usedTime > gameTimer)
         {
             gameState = GameState.Lose;
-            GameStateChanged?.Invoke(GameState.Lose);
+            GameStateChanged?.Invoke(gameState);
         }
+    }
+
+    public void RestartGame()
+    {
+        //Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void ContinueGame()
+    {
+        gameState = lastGameState;
+        GameStateChanged?.Invoke(gameState);
+    }
+
+    public void PauseGame()
+    {
+        lastGameState = gameState;
+        gameState = GameState.Pause;
+        GameStateChanged?.Invoke(gameState);
     }
 
 

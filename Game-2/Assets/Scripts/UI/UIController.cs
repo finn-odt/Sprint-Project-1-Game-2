@@ -3,21 +3,43 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
-    public Slider gameTimerSlider;
-    public Slider sanitySlider;
+    [SerializeField] private Slider gameTimerSlider;
+    [SerializeField] private Slider sanitySlider;
+    [SerializeField] private GameObject interactionIndicator;
+
+    [SerializeField] private Canvas gameCanvas;
+    [SerializeField] private Canvas pauseCanvas;
+    [SerializeField] private Canvas gameOverCanvas;
+    [SerializeField] private Canvas winCanvas;
 
     private void Start()
     {
         if(GameManager.Instance != null) {
             GameManager.Instance.GameTimerUpdated += DisplayGameTimer;
             GameManager.Instance.SanityUpdated += DisplaySanity;
+
+            GameManager.Instance.InteractionStatusChanged += ShowInteractionIndicator;
+
+            GameManager.Instance.GameStateChanged += OnGameStateChange;
         }
+
+        interactionIndicator.SetActive(false);
+
+        // deactivate sanity slider at first
+        sanitySlider.gameObject.SetActive(false);
+
+        gameCanvas.gameObject.SetActive(true);
+        pauseCanvas.gameObject.SetActive(false);
+        gameOverCanvas.gameObject.SetActive(false);
+        winCanvas.gameObject.SetActive(false);
     }
 
     private void OnDisable()
     {
         GameManager.Instance.GameTimerUpdated -= DisplayGameTimer;
         GameManager.Instance.SanityUpdated -= DisplaySanity;
+        GameManager.Instance.InteractionStatusChanged -= ShowInteractionIndicator;
+            GameManager.Instance.GameStateChanged -= OnGameStateChange;
     }
 
     private void DisplayGameTimer(float usedTime, float totalTime)
@@ -40,6 +62,66 @@ public class UIController : MonoBehaviour
         {
             sanitySlider.gameObject.SetActive(true);
             sanitySlider.value = sanity;
+        }
+    }
+
+    private void ShowInteractionIndicator(Transform interactable)
+    {
+        if(interactable == null) {
+            interactionIndicator.SetActive(false);  // hide indicator
+            return;
+        }
+        interactionIndicator.SetActive(true);
+
+        Vector3 worldPos = interactable.position + new Vector3(0, 0.5f, 0);
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+
+        RectTransform canvasRect = gameCanvas.GetComponent<RectTransform>();
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            screenPos,
+            gameCanvas.worldCamera,
+            out Vector2 localPos
+        );
+
+        // place indicator over interactable object
+        interactionIndicator.transform.localPosition = localPos;
+    }
+
+    private void OnGameStateChange(GameState newState)
+    {
+        if(newState == GameState.Playing)
+        {
+            // activate sanity slider after intro
+            sanitySlider.gameObject.SetActive(false);
+        }
+
+        switch(newState)
+        {
+            case GameState.Pause:  // PAUSED
+                gameCanvas.gameObject.SetActive(false);
+                gameOverCanvas.gameObject.SetActive(false);
+                winCanvas.gameObject.SetActive(false);
+                pauseCanvas.gameObject.SetActive(true);
+                break;
+            case GameState.End:  // WON
+                gameCanvas.gameObject.SetActive(false);
+                pauseCanvas.gameObject.SetActive(false);
+                gameOverCanvas.gameObject.SetActive(false);
+                winCanvas.gameObject.SetActive(true);
+                break;
+            case GameState.Lose:  // GAME OVER
+                gameCanvas.gameObject.SetActive(false);
+                pauseCanvas.gameObject.SetActive(false);
+                winCanvas.gameObject.SetActive(false);
+                gameOverCanvas.gameObject.SetActive(true);
+                break;
+            default:
+                pauseCanvas.gameObject.SetActive(false);
+                gameOverCanvas.gameObject.SetActive(false);
+                winCanvas.gameObject.SetActive(false);
+                gameCanvas.gameObject.SetActive(true);
+                break;
         }
     }
 }

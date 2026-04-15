@@ -1,7 +1,8 @@
 public enum GameState
 {
-    Park,
-    Graveyard,
+    Intro,
+    Playing,
+    Pause,
     End,
     Lose
 }
