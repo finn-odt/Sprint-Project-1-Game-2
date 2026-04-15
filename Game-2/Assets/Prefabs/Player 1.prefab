@@ -84,6 +84,8 @@ MonoBehaviour:
   controller: {fileID: 3460550891164018432}
   speed: 5
   pushPower: 1
+  otherPlayer: {fileID: 0}
+  maxPlayerDistance: 20
   gravity: -20
 --- !u!114 &4676443417296884576
 MonoBehaviour:
@@ -100,6 +102,7 @@ MonoBehaviour:
   playerMovement: {fileID: 1103352206192972538}
   actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   actionMapName: Player
+  _playerIndex: 1
   interactionCollider: {fileID: 6051374373826355771}
   interactionLayer:
     serializedVersion: 2

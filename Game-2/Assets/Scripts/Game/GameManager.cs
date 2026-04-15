@@ -6,6 +6,19 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    private DeviceConnection deviceConnection;
+
+    public DeviceConnection GetConnectionMode()
+    {
+        return deviceConnection;
+    }
+
+    public void SetConnectionMode(DeviceConnection mode)
+    {
+        deviceConnection = mode;
+    }
+
+    public Action ConnectionModeChanged;
 
     public static GameManager Instance;
     private GameState gameState = GameState.Intro;  // set to first game state
@@ -101,6 +114,20 @@ public class GameManager : MonoBehaviour
         lastGameState = gameState;
         gameState = GameState.Pause;
         GameStateChanged?.Invoke(gameState);
+    }
+
+    public Action<int, int> SkillCheck;
+    public Action SkillCheckFinished;
+    [Unit("sec")] [SerializeField] private float skillCheckTimePenalty;
+
+    public void TriggerSkillCheck(int playerIndex, int buttonIndex)
+    {
+        SkillCheck.Invoke(playerIndex, buttonIndex);
+    }
+
+    public void TakeTimeAway()
+    {
+        usedTime += skillCheckTimePenalty;
     }
 
 

@@ -10,18 +10,29 @@ public class PlayerInputHandler : MonoBehaviour
 
     [SerializeField] private InputActionAsset actions;
     [SerializeField] private string actionMapName = "Player";
+    [SerializeField] private int _playerIndex = 0;
 
     private InputActionMap inputMap;
     private InputAction moveAction;
     private InputAction crouchAction;
     private InputAction interactAction;
+    private InputAction skillCheck1Action;
+    private InputAction skillCheck2Action;
+    private InputAction skillCheck3Action;
+
+    private int skillCheck1Count = 0, skillCheck2Count = 0, skillCheck3Count = 0;
+    private int skillButtonIndexToPress;
 
     private bool isControllable = true;  // set false, if Game Over
+    private bool skillCheckActive = false;  // set true, when skill check event is triggered
 
     private void Start()
     {
-        if (GameManager.Instance != null)
+        if (GameManager.Instance != null) {
             GameManager.Instance.GameStateChanged += OnGameStateChange;
+
+            GameManager.Instance.SkillCheck += OnSkillCheck;
+        }
     }
 
     private void Awake()
@@ -36,12 +47,62 @@ public class PlayerInputHandler : MonoBehaviour
         crouchAction = inputMap.FindAction("Crouch", true);
         interactAction = inputMap.FindAction("Interact", true);
 
+        skillCheck1Action = inputMap.FindAction("SkillCheck1", true);
+        skillCheck2Action = inputMap.FindAction("SkillCheck2", true);
+        skillCheck3Action = inputMap.FindAction("SkillCheck3", true);
+
         //pickUpPlayerAction = inputMap.FindAction("PickUpPlayer");  // can be null for Player2 (Tiny)
     }
 
     void Update()
     {
         InteractionCollisionDetection();
+
+        if(skillCheckActive)
+        { 
+            // were multiple or the wrong buttons pressed -> failure
+            if(CountPressedSkillButtons() > 1 || (CountPressedSkillButtons() > 0 && !CheckForSkillButtonPress()))
+            {
+                GameManager.Instance.TakeTimeAway();
+                DeactivateSkillCheck();
+            } else if(CheckForSkillButtonPress()) {  // was correct button pressed?
+                DeactivateSkillCheck();
+            }
+        }
+    }
+
+    private void DeactivateSkillCheck()
+    {
+        GameManager.Instance.SkillCheckFinished.Invoke();  // trigger end of skill check
+
+        Debug.Log("Skill Check End");
+        skillCheck1Count = skillCheck2Count = skillCheck3Count = 0;
+        skillCheckActive = false;
+        isControllable = true;
+    }
+
+    private bool CheckForSkillButtonPress()
+    {
+        // checks if correct button was pressed
+        if(skillCheck1Count > 0 && skillButtonIndexToPress == 1)
+            return true;
+        if(skillCheck2Count > 0 && skillButtonIndexToPress == 2)
+            return true;
+        if(skillCheck3Count > 0 && skillButtonIndexToPress == 3)
+            return true;
+        return false;
+    }
+
+    private int CountPressedSkillButtons()
+    {
+        int counter = 0;
+        if(skillCheck1Count > 0)
+            counter++;
+        if(skillCheck2Count > 0)
+            counter++;
+        if(skillCheck3Count > 0)
+            counter++;
+        return counter;
     }
 
     private void OnGameStateChange(GameState newState)
@@ -51,6 +112,32 @@ public class PlayerInputHandler : MonoBehaviour
             isControllable = false;
         else
             isControllable = true;
+    }
+
+    private void OnSkillCheck(int playerIndex, int buttonIndex)
+    {
+        if(playerIndex != _playerIndex)
+            return;  // ignore, if Skill Check is for other player
+
+        isControllable = false;
+        skillCheckActive = true;
+        skillButtonIndexToPress = buttonIndex;
+    }
+
+    private void OnSkillCheck1Input(CallbackContext context)
+    {
+        if(skillCheckActive)
+            skillCheck1Count++;
+    }
+    private void OnSkillCheck2Input(CallbackContext context)
+    {
+        if(skillCheckActive)
+            skillCheck2Count++;
+    }
+    private void OnSkillCheck3Input(CallbackContext context)
+    {
+        if(skillCheckActive)
+            skillCheck3Count++;
     }
 
     private void OnEnable()
@@ -64,6 +151,10 @@ public class PlayerInputHandler : MonoBehaviour
         crouchAction.canceled += OnCrouch;
 
         interactAction.performed += OnInteract;
+
+        skillCheck1Action.performed += OnSkillCheck1Input;
+        skillCheck2Action.performed += OnSkillCheck2Input;
+        skillCheck3Action.performed += OnSkillCheck3Input;
     }
 
     private void OnDisable()
@@ -75,6 +166,10 @@ public class PlayerInputHandler : MonoBehaviour
         crouchAction.canceled -= OnCrouch;
 
         interactAction.performed -= OnInteract;
+
+        skillCheck1Action.performed -= OnSkillCheck1Input;
+        skillCheck2Action.performed -= OnSkillCheck2Input;
+        skillCheck3Action.performed -= OnSkillCheck3Input;
 
         inputMap.Disable();
 
@@ -151,10 +246,13 @@ public class PlayerInputHandler : MonoBehaviour
             IInteractable interactable = hitColliders[i].GetComponentInChildren<IInteractable>();
             if (interactable != null)
             {
+                // Trigger skill check for this player
+                int playerID = int.Parse(LayerMask.LayerToName(gameObject.layer).Replace("Player", ""));
+                GameManager.Instance.TriggerSkillCheck(playerID, Random.Range(1, 4));
+                
                 interactable.Interact(gameObject);  // parameter = player object for interaction
+                return true;  // interaction started
             }
-            
-            return true;  // interaction started
         }
         
         return false;

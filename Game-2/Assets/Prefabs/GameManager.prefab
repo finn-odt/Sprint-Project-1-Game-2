@@ -50,6 +50,7 @@ MonoBehaviour:
   sanityLimit: 0.05
   sanityUpdateInterval: 0.1
   sanityUpdateStep: 0.001
+  skillCheckTimePenalty: 5
 --- !u!1 &8195141899572379347
 GameObject:
   m_ObjectHideFlags: 0

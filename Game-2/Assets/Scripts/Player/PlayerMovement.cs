@@ -3,12 +3,15 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] CharacterController controller;
-    private Vector2 moveDir;
+    private Vector2 moveDir = new Vector2(0, 0);
     private bool isCrouching = true;  // set false, if Game Over
 
     [SerializeField] private float speed;
     [SerializeField] private float pushPower;
     //[SerializeField] private float rotationSpeed;
+
+    [SerializeField] private GameObject otherPlayer;
+    [SerializeField] private float maxPlayerDistance = 20;
 
 
     // GRAVITY
@@ -57,6 +60,9 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("isWalking", false);
         */
         
+        // ------- CHECK DISTANCE TO OTHER PLAYER -------
+        Vector3 otherPos = otherPlayer.transform.position;
+        Vector3 pos = transform.position;
 
         // ------- MOVEMENT -------        
         Vector3 dir = new Vector3(moveDir.x, 0, moveDir.y);  // remove height movement
@@ -72,7 +78,9 @@ public class PlayerMovement : MonoBehaviour
 
         move.y = yVelocity;
 
-        //transform.position = transform.position + move;
-        controller.Move(move);  // move with character controller (animator)
+        // make move only, when players are in the distance interval
+        if(Vector3.Distance(otherPos, pos+move) < maxPlayerDistance)
+            controller.Move(move);  // move with character controller (animator)
+        // TODO: else { call for other player }
     }
 }
