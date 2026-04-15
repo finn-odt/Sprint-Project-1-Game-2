@@ -5,7 +5,7 @@ public class PlayerController : MonoBehaviour
 {
 
     private bool areHandsConnected = false;
-    private Material oldMaterial;
+    public Material oldMaterial;
     [SerializeField] private Material handIndicatorMaterial;
 
     private MeshRenderer meshRenderer;
@@ -18,6 +18,9 @@ public class PlayerController : MonoBehaviour
 
     public void OnHandTriggerEnter(Collider other)
     {
+        if(areHandsConnected)
+            return;
+
         areHandsConnected = true;
         GameManager.Instance.SetPlayersHoldingHands(areHandsConnected);
         
@@ -27,6 +30,9 @@ public class PlayerController : MonoBehaviour
 
     public void OnHandTriggerExit(Collider other)
     {
+        if(!areHandsConnected)
+            return;
+
         areHandsConnected = false;
         GameManager.Instance.SetPlayersHoldingHands(areHandsConnected);
         
