@@ -17,7 +17,7 @@ public class Gate : MonoBehaviour, IInteractable
         // TODO: somehow start animation of player for lock picking
 
 
-        StartCoroutine(StartOpeningAnimation(0.8f));
+        StartCoroutine(StartOpeningAnimation(0.3f));
 
         // remove Layer for clearing interactability
         gameObject.layer = LayerMask.NameToLayer("UsedInteractable");

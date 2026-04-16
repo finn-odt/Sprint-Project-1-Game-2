@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class SkillcheckNPCController : NPCController
 {
-    
+    private Animator animator;
     private Transform target;
     private bool wasTriggered = false;
     [SerializeField, LabelText("Skill Check Trigger Layer")] private string[] triggerLayers;
 
     void Start()
     {
-        
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
@@ -23,6 +23,7 @@ public class SkillcheckNPCController : NPCController
         dir.Normalize();
 
         // move NPC towards target (aka player)
+        transform.LookAt(target.position);
         transform.position = currPos + dir * speed * Time.deltaTime;
     }
 
@@ -30,6 +31,8 @@ public class SkillcheckNPCController : NPCController
     {        
         target = other.gameObject.transform;  // set player as target
         wasTriggered = true;
+
+        animator.SetTrigger("isRunning"); 
     }
     
     private void OnTriggerEnter(Collider other)
