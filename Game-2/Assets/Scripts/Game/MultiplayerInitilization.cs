@@ -50,7 +50,7 @@ public class MultiplayerInitialization : MonoBehaviour
             player2Actions.bindingMask = InputBinding.MaskByGroup("Keyboard&Mouse");
             player2Actions.devices = GetKeyboardMouseDevices();
 
-            Debug.Log("Player1 and Player2 with Keyboard");
+            GameManager.Instance.SetConnectionMode(DeviceConnection.Keyboard);
         }
         else if (pads == 1)
         {
@@ -60,7 +60,7 @@ public class MultiplayerInitialization : MonoBehaviour
             player2Actions.bindingMask = InputBinding.MaskByGroup("Keyboard&Mouse");
             player2Actions.devices = GetKeyboardMouseDevices();
 
-            Debug.Log("Player1 with Gamepad, Player2 with Keyboard");
+            GameManager.Instance.SetConnectionMode(DeviceConnection.Mixed);
         }
         else
         {
@@ -70,11 +70,13 @@ public class MultiplayerInitialization : MonoBehaviour
             player2Actions.bindingMask = InputBinding.MaskByGroup("Gamepad");
             player2Actions.devices = new InputDevice[] { Gamepad.all[1] };
 
-            Debug.Log("Player1 and Player2 with Gamepads");
+            GameManager.Instance.SetConnectionMode(DeviceConnection.Gamepad);
         }
 
         player1Actions.Enable();
         player2Actions.Enable();
+        
+        GameManager.Instance.ConnectionModeChanged.Invoke();
     }
 
     private InputDevice[] GetKeyboardMouseDevices()

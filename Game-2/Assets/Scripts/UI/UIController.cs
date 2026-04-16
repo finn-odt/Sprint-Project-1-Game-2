@@ -1,16 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class UIController : MonoBehaviour
 {
     [SerializeField] private Slider gameTimerSlider;
     [SerializeField] private Slider sanitySlider;
     [SerializeField] private GameObject interactionIndicator;
+    [SerializeField] private GameObject skillCheckIndicator;
 
     [SerializeField] private Canvas gameCanvas;
     [SerializeField] private Canvas pauseCanvas;
     [SerializeField] private Canvas gameOverCanvas;
     [SerializeField] private Canvas winCanvas;
+    [SerializeField] private string[] connectionModeTags;
 
     private void Start()
     {
@@ -21,9 +24,16 @@ public class UIController : MonoBehaviour
             GameManager.Instance.InteractionStatusChanged += ShowInteractionIndicator;
 
             GameManager.Instance.GameStateChanged += OnGameStateChange;
+
+            GameManager.Instance.ConnectionModeChanged += OnConnectionModeChange;
+
+            GameManager.Instance.SkillCheck += OnSkillCheckEnter;
+            GameManager.Instance.SkillCheckFinished += OnSkillCheckExit;
         }
 
+        // deactivate indicators
         interactionIndicator.SetActive(false);
+        skillCheckIndicator.SetActive(false);
 
         // deactivate sanity slider at first
         sanitySlider.gameObject.SetActive(false);
@@ -34,12 +44,36 @@ public class UIController : MonoBehaviour
         winCanvas.gameObject.SetActive(false);
     }
 
+    private void OnConnectionModeChange()
+    {
+        // activate only the necessary UI elements (regarding Keyboard, Gamepad, Mixed)
+        string visibleConnectionModeTag = GameManager.Instance.GetConnectionMode().ToString();
+        
+        // get all transforms (also inactive ones)
+        Transform[] allTransforms = Resources.FindObjectsOfTypeAll<Transform>();
+        foreach(string tag in connectionModeTags)
+        {
+            // filter for correct tag
+            var objs = allTransforms
+                .Where(t => t.CompareTag(tag))
+                .Select(t => t.gameObject)
+                .ToArray();
+
+            foreach(GameObject obj in objs)
+            {
+                obj.SetActive(tag == visibleConnectionModeTag);
+            }
+        }    
+    }
+
     private void OnDisable()
     {
         GameManager.Instance.GameTimerUpdated -= DisplayGameTimer;
         GameManager.Instance.SanityUpdated -= DisplaySanity;
         GameManager.Instance.InteractionStatusChanged -= ShowInteractionIndicator;
-            GameManager.Instance.GameStateChanged -= OnGameStateChange;
+        GameManager.Instance.GameStateChanged -= OnGameStateChange;
+        GameManager.Instance.SkillCheck -= OnSkillCheckEnter;
+        GameManager.Instance.SkillCheckFinished -= OnSkillCheckExit;
     }
 
     private void DisplayGameTimer(float usedTime, float totalTime)
@@ -73,19 +107,8 @@ public class UIController : MonoBehaviour
         }
         interactionIndicator.SetActive(true);
 
-        Vector3 worldPos = interactable.position + new Vector3(0, 0.5f, 0);
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-
-        RectTransform canvasRect = gameCanvas.GetComponent<RectTransform>();
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvasRect,
-            screenPos,
-            gameCanvas.worldCamera,
-            out Vector2 localPos
-        );
-
         // place indicator over interactable object
-        interactionIndicator.transform.localPosition = localPos;
+        interactionIndicator.transform.localPosition = GetScreenCoordinatesOfPlayer(interactable.position, new Vector3(0, 0.5f, 0));
     }
 
     private void OnGameStateChange(GameState newState)
@@ -123,5 +146,50 @@ public class UIController : MonoBehaviour
                 gameCanvas.gameObject.SetActive(true);
                 break;
         }
+    }
+
+    private void OnSkillCheckEnter(int playerIndex, int buttonIndex)
+    {
+        // get player instance
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        int playerLayer = LayerMask.NameToLayer("Player" + playerIndex);
+
+        GameObject wantedPlayer = players.FirstOrDefault(player => player.layer == playerLayer);
+
+        // place indicator over player
+        skillCheckIndicator.SetActive(true);
+        skillCheckIndicator.transform.localPosition = GetScreenCoordinatesOfPlayer(wantedPlayer.transform.position, new Vector3(0, 1f, 0));
+
+        // show just the button that is needed
+        int i = 1;
+        // 6 elements in total (first 3 -> Player1, second 3 -> Player2)
+        int modifiedButtonIndex = ((playerIndex - 1) * 2) + buttonIndex;
+        foreach (Transform child in skillCheckIndicator.transform)
+        {
+            child.gameObject.SetActive(i == modifiedButtonIndex);
+            i++;
+        }
+    }
+
+    private void OnSkillCheckExit()
+    {
+        skillCheckIndicator.SetActive(false);
+    }
+
+    private Vector2 GetScreenCoordinatesOfPlayer(Vector3 position, Vector3 offset)
+    {
+        Vector3 worldPos = position + new Vector3(0, 0.5f, 0);
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+
+        RectTransform canvasRect = gameCanvas.GetComponent<RectTransform>();
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            screenPos,
+            gameCanvas.worldCamera,
+            out Vector2 localPos
+        );
+
+        return localPos;
     }
 }
