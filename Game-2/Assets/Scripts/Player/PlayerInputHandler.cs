@@ -23,6 +23,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private int skillCheck1Count = 0, skillCheck2Count = 0, skillCheck3Count = 0;
     private int skillButtonIndexToPress;
+    private bool skillCheckTriggeredByNPC = false;
 
     private bool isControllable = true;  // set false, if Game Over
     private bool skillCheckActive = false;  // set true, when skill check event is triggered
@@ -61,10 +62,15 @@ public class PlayerInputHandler : MonoBehaviour
 
         if(skillCheckActive)
         { 
+            Debug.Log("Necessary-Button-Index: " + skillButtonIndexToPress);
             // were multiple or the wrong buttons pressed -> failure
             if(CountPressedSkillButtons() > 1 || (CountPressedSkillButtons() > 0 && !CheckForSkillButtonPress()))
             {
-                GameManager.Instance.TakeTimeAway();
+                if(skillCheckTriggeredByNPC)
+                    GameManager.Instance.TakeSanityAway();
+                else
+                    GameManager.Instance.TakeTimeAway();
+
                 DeactivateSkillCheck();
             } else if(CheckForSkillButtonPress()) {  // was correct button pressed?
                 DeactivateSkillCheck();
@@ -115,7 +121,7 @@ public class PlayerInputHandler : MonoBehaviour
             isControllable = true;
     }
 
-    private void OnSkillCheck(int playerIndex, int buttonIndex)
+    private void OnSkillCheck(int playerIndex, int buttonIndex, bool triggeredByNPC)
     {
         if(playerIndex != _playerIndex)
             return;  // ignore, if Skill Check is for other player
@@ -123,6 +129,7 @@ public class PlayerInputHandler : MonoBehaviour
         isControllable = false;
         skillCheckActive = true;
         skillButtonIndexToPress = buttonIndex;
+        skillCheckTriggeredByNPC = triggeredByNPC;
     }
 
     private void OnSkillCheck1Input(CallbackContext context)
@@ -250,7 +257,7 @@ public class PlayerInputHandler : MonoBehaviour
             {
                 // Trigger skill check for this player
                 int playerID = int.Parse(LayerMask.LayerToName(gameObject.layer).Replace("Player", ""));
-                GameManager.Instance.TriggerSkillCheck(playerID, Random.Range(1, 4));
+                GameManager.Instance.TriggerSkillCheck(playerID, false);
                 
                 interactable.Interact(gameObject);  // parameter = player object for interaction
                 return true;  // interaction started

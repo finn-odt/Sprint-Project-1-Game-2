@@ -110,9 +110,14 @@ public class GameManager : MonoBehaviour
         // Check Loosing Condition
         if(sanity < sanityLimit || usedTime > gameTimer)
         {
-            gameState = GameState.Lose;
-            GameStateChanged?.Invoke(gameState);
+            GameOver();
         }
+    }
+
+    public void GameOver()
+    {
+        gameState = GameState.Lose;
+        GameStateChanged?.Invoke(gameState);
     }
 
     public void RestartGame()
@@ -135,18 +140,25 @@ public class GameManager : MonoBehaviour
         GameStateChanged?.Invoke(gameState);
     }
 
-    public Action<int, int> SkillCheck;
+    public Action<int, int, bool> SkillCheck;
     public Action SkillCheckFinished;
     [Unit("sec")] [SerializeField, LabelText("Skill Check Failure Time Penalty")] private float skillCheckTimePenalty;
+    [SerializeField, LabelText("Skill Check Failure Sanity Penalty"), Range(0f, 1f)] private float skillCheckSanityPenalty;
 
-    public void TriggerSkillCheck(int playerIndex, int buttonIndex)
+    public void TriggerSkillCheck(int playerIndex, bool triggeredByNPC)
     {
-        SkillCheck?.Invoke(playerIndex, buttonIndex);
+        int buttonIndex = UnityEngine.Random.Range(1, 4);  // random skill check button
+        SkillCheck?.Invoke(playerIndex, buttonIndex, triggeredByNPC);
     }
 
     public void TakeTimeAway()
     {
         usedTime += skillCheckTimePenalty;
+    }
+
+    public void TakeSanityAway()
+    {
+        sanity -= skillCheckSanityPenalty;
     }
 
 
@@ -173,11 +185,6 @@ public class GameManager : MonoBehaviour
     {
         // remove subscription for game manager action
         GameManager.Instance.PlayerGetsChased -= OnPlayerGetsChased;
-    }
-
-    private void OnPlayerGetsChased()
-    {
-        Debug.Log("Player is being chased!");
     }
 
     */
