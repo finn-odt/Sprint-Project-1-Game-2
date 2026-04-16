@@ -1,4 +1,5 @@
 using System.Linq;
+using TriInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
@@ -6,11 +7,11 @@ using static UnityEngine.InputSystem.InputAction;
 public class PlayerInputHandler : MonoBehaviour
 {
 
-    [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField, LabelText("Player Movement Script Component")] private PlayerMovement playerMovement;
 
-    [SerializeField] private InputActionAsset actions;
-    [SerializeField] private string actionMapName = "Player";
-    [SerializeField] private int _playerIndex = 0;
+    [SerializeField, LabelText("Player Input Action Asset")] private InputActionAsset actions;
+    [SerializeField, LabelText("Action Map Name")] private string actionMapName = "Player";
+    [SerializeField, LabelText("Player-Index"), Range(1, 2)] private int _playerIndex = 0;
 
     private InputActionMap inputMap;
     private InputAction moveAction;
@@ -26,13 +27,22 @@ public class PlayerInputHandler : MonoBehaviour
     private bool isControllable = true;  // set false, if Game Over
     private bool skillCheckActive = false;  // set true, when skill check event is triggered
 
+    private bool interactionOrLetHandGo = true;  // false, when holding hands
+
     private void Start()
     {
         if (GameManager.Instance != null) {
             GameManager.Instance.GameStateChanged += OnGameStateChange;
 
             GameManager.Instance.SkillCheck += OnSkillCheck;
+
+            GameManager.Instance.PlayerHandsConnected += OnHandConnectionChange;
         }
+    }
+
+    private void OnHandConnectionChange(bool handsConnected)
+    {
+        interactionOrLetHandGo = !handsConnected;
     }
 
     private void Awake()
@@ -173,8 +183,13 @@ public class PlayerInputHandler : MonoBehaviour
 
         inputMap.Disable();
 
-        if (GameManager.Instance != null)
+        if (GameManager.Instance != null) {
             GameManager.Instance.GameStateChanged -= OnGameStateChange;
+
+            GameManager.Instance.SkillCheck -= OnSkillCheck;
+
+            GameManager.Instance.PlayerHandsConnected -= OnHandConnectionChange;
+        }
     }
 
     public void OnMove(CallbackContext context)
@@ -198,19 +213,24 @@ public class PlayerInputHandler : MonoBehaviour
         if(!isControllable)
             return;
 
-        Debug.Log("Interaction wanted");
-        
-        StartInteraction();  // returns true, if interaction was started
+        if(interactionOrLetHandGo)
+            StartInteraction();  // returns true, if interaction was started
+        else
+            GameManager.Instance.SetPlayersHoldingHands(false);  // let go of hands
     }
 
-    public Transform interactionCollider;  // collider for interaction
-    public LayerMask interactionLayer;  // to which layer the collision is restricted
+    [SerializeField, LabelText("Interaction-Check Collider")] private Transform interactionCollider;  // collider for interaction
+    [SerializeField, LabelText("Interaction-Collider Layermask")] private LayerMask interactionLayer;  // to which layer the collision is restricted
 
     private int lastHitColliderCount = 0;
 
     // Collision Detection for Interactable Game Objects nearby
     private void InteractionCollisionDetection()
     {
+        // don't show indicator, when holding hands
+        if(!interactionOrLetHandGo)
+            return;
+
         Collider[] hitColliders = Physics.OverlapBox(interactionCollider.position,
             interactionCollider.localScale,
             Quaternion.identity,

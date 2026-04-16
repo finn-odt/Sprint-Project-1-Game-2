@@ -1,13 +1,14 @@
 using UnityEngine;
 using Unity.Cinemachine;
+using TriInspector;
 
 public class CameraSwitcher : MonoBehaviour
 {
     public static CameraSwitcher Instance { get; private set; }
 
-    [SerializeField] private CinemachineCamera gameplayCam;
-    [SerializeField] private CinemachineCamera onShoulderCam;
-    [SerializeField] private CinemachineCamera highlightCam;
+    [SerializeField, LabelText("Normal Gameplay Camera")] private CinemachineCamera gameplayCam;
+    [SerializeField, LabelText("Lift Up Camera")] private CinemachineCamera onShoulderCam;
+    [SerializeField, LabelText("Highlight Camera")] private CinemachineCamera highlightCam;
 
     private void Awake()
     {
