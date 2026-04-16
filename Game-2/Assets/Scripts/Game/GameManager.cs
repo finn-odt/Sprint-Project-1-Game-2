@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
             return;
 
         // if changed, invoke event
-        PlayerHandsConnected.Invoke(isHoldingHands);
+        PlayerHandsConnected?.Invoke(isHoldingHands);
 
         arePlayersHoldingHands = isHoldingHands;
         sanityUpdateTimer = sanityUpdateInterval;  // set timer to interval, to execute instantly
@@ -126,7 +126,7 @@ public class GameManager : MonoBehaviour
 
     public void TriggerSkillCheck(int playerIndex, int buttonIndex)
     {
-        SkillCheck.Invoke(playerIndex, buttonIndex);
+        SkillCheck?.Invoke(playerIndex, buttonIndex);
     }
 
     public void TakeTimeAway()

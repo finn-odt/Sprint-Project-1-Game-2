@@ -83,7 +83,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void DeactivateSkillCheck()
     {
-        GameManager.Instance.SkillCheckFinished.Invoke();  // trigger end of skill check
+        GameManager.Instance.SkillCheckFinished?.Invoke();  // trigger end of skill check
 
         Debug.Log("Skill Check End");
         skillCheck1Count = skillCheck2Count = skillCheck3Count = 0;
@@ -238,7 +238,7 @@ public class PlayerInputHandler : MonoBehaviour
 
         // deactivate indicator, when none are in radius
         if(hitColliders.Length == 0 && lastHitColliderCount != hitColliders.Length)
-            GameManager.Instance?.InteractionStatusChanged.Invoke(null);
+            GameManager.Instance?.InteractionStatusChanged?.Invoke(null);
 
         lastHitColliderCount = hitColliders.Length;
         for (int i = 0; i < hitColliders.Length; i++)
@@ -248,7 +248,7 @@ public class PlayerInputHandler : MonoBehaviour
             if (interactable != null)
             {
                 // set transform of interactable for UI Indicator
-                GameManager.Instance?.InteractionStatusChanged.Invoke(hitColliders[i].transform);
+                GameManager.Instance?.InteractionStatusChanged?.Invoke(hitColliders[i].transform);
             }
         }
     }
