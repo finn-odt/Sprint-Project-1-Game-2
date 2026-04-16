@@ -1,19 +1,20 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using TriInspector;
 
 public class UIController : MonoBehaviour
 {
-    [SerializeField] private Slider gameTimerSlider;
-    [SerializeField] private Slider sanitySlider;
-    [SerializeField] private GameObject interactionIndicator;
-    [SerializeField] private GameObject skillCheckIndicator;
+    [SerializeField, LabelText("Time UI-Slider")] private Slider gameTimerSlider;
+    [SerializeField, LabelText("Sanity UI-Slider")] private Slider sanitySlider;
+    [SerializeField, LabelText("Interaction Indicator")] private GameObject interactionIndicator;
+    [SerializeField, LabelText("Skill Check Indicator")] private GameObject skillCheckIndicator;
 
-    [SerializeField] private Canvas gameCanvas;
-    [SerializeField] private Canvas pauseCanvas;
-    [SerializeField] private Canvas gameOverCanvas;
-    [SerializeField] private Canvas winCanvas;
-    [SerializeField] private string[] connectionModeTags;
+    [SerializeField, LabelText("Gameplay Canvas")] private Canvas gameCanvas;
+    [SerializeField, LabelText("Pause Menu Canvas")] private Canvas pauseCanvas;
+    [SerializeField, LabelText("Game Over Canvas")] private Canvas gameOverCanvas;
+    [SerializeField, LabelText("Win Canvas")] private Canvas winCanvas;
+    [SerializeField, LabelText("Connection Mode Tags")] private string[] connectionModeTags;
 
     private void Start()
     {

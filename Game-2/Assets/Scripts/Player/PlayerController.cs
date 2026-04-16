@@ -1,14 +1,37 @@
+using TriInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
 
+    [SerializeField, LabelText("Player Movement Script Component")] private PlayerMovement playerMovement;
     private bool areHandsConnected = false;
     public Material oldMaterial;
-    [SerializeField] private Material handIndicatorMaterial;
+    [SerializeField, LabelText("Material-Indicator Hand-Holding")] private Material handIndicatorMaterial;
 
     private MeshRenderer meshRenderer;
+
+    private void Start()
+    {
+        if (GameManager.Instance != null) {
+            GameManager.Instance.PlayerHandsConnected += OnHandConnectionChange;
+        }
+    }
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null) {
+            GameManager.Instance.PlayerHandsConnected -= OnHandConnectionChange;
+        }
+    }
+
+    private void OnHandConnectionChange(bool handsConnected)
+    {
+        if(areHandsConnected && !handsConnected)
+        {
+            areHandsConnected = false;
+        }
+    }
     
     private void Awake()
     {
@@ -23,13 +46,19 @@ public class PlayerController : MonoBehaviour
 
         areHandsConnected = true;
         GameManager.Instance.SetPlayersHoldingHands(areHandsConnected);
+
+        // disabling hand holding is controlled by PlayerInputHandler.cs
         
-        oldMaterial = meshRenderer.material;
-        meshRenderer.material = handIndicatorMaterial;
+        // TODO: replace with animation of hand holding?
+        //oldMaterial = meshRenderer.material;
+        //meshRenderer.material = handIndicatorMaterial;
     }
 
     public void OnHandTriggerExit(Collider other)
     {
+        // do nothing, because button-press for letting go
+
+        /*
         if(!areHandsConnected)
             return;
 
@@ -37,5 +66,6 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.SetPlayersHoldingHands(areHandsConnected);
         
         meshRenderer.material = oldMaterial;
+        */
     }
 }

@@ -1,4 +1,5 @@
 using System.Linq;
+using TriInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
@@ -6,8 +7,8 @@ using static UnityEngine.InputSystem.InputAction;
 public class MenuInputHandler : MonoBehaviour
 {
 
-    [SerializeField] private InputActionAsset actions;
-    [SerializeField] private string actionMapName = "UI";
+    [SerializeField, LabelText("Input Action Asset")] private InputActionAsset actions;
+    [SerializeField, LabelText("Action Map Name")] private string actionMapName = "UI";
 
     private InputActionMap inputMap;
     private InputAction escapeAction;

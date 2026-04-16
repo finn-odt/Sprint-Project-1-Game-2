@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using TriInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class MultiplayerInitialization : MonoBehaviour
 {
-    [SerializeField] private InputActionAsset player1Actions;
-    [SerializeField] private InputActionAsset player2Actions;
+    [SerializeField, LabelText("Input Action Asset Player 1")] private InputActionAsset player1Actions;
+    [SerializeField, LabelText("Input Action Asset Player 2")] private InputActionAsset player2Actions;
 
     private void Start()
     {
@@ -76,7 +77,8 @@ public class MultiplayerInitialization : MonoBehaviour
         player1Actions.Enable();
         player2Actions.Enable();
         
-        GameManager.Instance.ConnectionModeChanged.Invoke();
+        if(GameManager.Instance != null)
+            GameManager.Instance.ConnectionModeChanged?.Invoke();
     }
 
     private InputDevice[] GetKeyboardMouseDevices()
