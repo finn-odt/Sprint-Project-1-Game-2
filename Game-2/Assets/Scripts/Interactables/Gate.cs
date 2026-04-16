@@ -17,14 +17,20 @@ public class Gate : MonoBehaviour, IInteractable
         // TODO: somehow start animation of player for lock picking
 
 
+        StartCoroutine(StartOpeningAnimation(0.8f));
+
+        // remove Layer for clearing interactability
+        gameObject.layer = LayerMask.NameToLayer("UsedInteractable");
+    }
+
+    private IEnumerator StartOpeningAnimation(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         // start animation of gate swinging open
         if(gateAnimator != null) {
             gateAnimator.SetTrigger("openGate");
             StartCoroutine(WaitForIdleOpen());
         }
-
-        // remove Layer for clearing interactability
-        gameObject.layer = LayerMask.NameToLayer("UsedInteractable");
     }
 
     private IEnumerator WaitForIdleOpen()

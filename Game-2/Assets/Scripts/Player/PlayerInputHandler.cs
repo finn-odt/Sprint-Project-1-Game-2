@@ -7,6 +7,8 @@ using static UnityEngine.InputSystem.InputAction;
 public class PlayerInputHandler : MonoBehaviour
 {
 
+    private Animator animator;
+
     [SerializeField, LabelText("Player Movement Script Component")] private PlayerMovement playerMovement;
 
     [SerializeField, LabelText("Player Input Action Asset")] private InputActionAsset actions;
@@ -16,7 +18,6 @@ public class PlayerInputHandler : MonoBehaviour
 
     private InputActionMap inputMap;
     private InputAction moveAction;
-    private InputAction crouchAction;
     private InputAction interactAction;
     private InputAction skillCheck1Action;
     private InputAction skillCheck2Action;
@@ -36,6 +37,7 @@ public class PlayerInputHandler : MonoBehaviour
 
             GameManager.Instance.SkillCheck += OnSkillCheck;
         }
+        animator = GetComponentInChildren<Animator>();
     }
 
     private void Awake()
@@ -45,9 +47,6 @@ public class PlayerInputHandler : MonoBehaviour
 
         inputMap = actions.FindActionMap(actionMapName, true);
         moveAction = inputMap.FindAction("Move", true);
-
-        
-        crouchAction = inputMap.FindAction("Crouch", true);
         interactAction = inputMap.FindAction("Interact", true);
 
         skillCheck1Action = inputMap.FindAction("SkillCheck1", true);
@@ -156,9 +155,6 @@ public class PlayerInputHandler : MonoBehaviour
         moveAction.performed += OnMove;
         moveAction.canceled += OnMove;
 
-        crouchAction.performed += OnCrouch;
-        crouchAction.canceled += OnCrouch;
-
         interactAction.performed += OnInteract;
 
         skillCheck1Action.performed += OnSkillCheck1Input;
@@ -170,9 +166,6 @@ public class PlayerInputHandler : MonoBehaviour
     {
         moveAction.performed -= OnMove;
         moveAction.canceled -= OnMove;
-
-        crouchAction.performed -= OnCrouch;
-        crouchAction.canceled -= OnCrouch;
 
         interactAction.performed -= OnInteract;
 
@@ -191,18 +184,18 @@ public class PlayerInputHandler : MonoBehaviour
 
     public void OnMove(CallbackContext context)
     {
-        if(!isControllable)
+        if(!isControllable) {
             playerMovement.SetMovement(Vector2.zero);
-        else
-            playerMovement.SetMovement(context.ReadValue<Vector2>());
-    }
+        } else {
+            Vector2 dir = context.ReadValue<Vector2>();
+            playerMovement.SetMovement(dir);
 
-    public void OnCrouch(CallbackContext context)
-    {
-        if(!isControllable)
-            return;
-        
-        playerMovement.SetCrouching(context.ReadValue<bool>());
+            // set animator-parameters
+            if(dir.magnitude > 0)
+                animator.SetBool("isWalking", true);
+            else
+                animator.SetBool("isWalking", false);
+        }
     }
 
     public void OnInteract(CallbackContext context)
@@ -260,13 +253,31 @@ public class PlayerInputHandler : MonoBehaviour
             IInteractable interactable = hitColliders[i].GetComponentInChildren<IInteractable>();
             if (interactable != null)
             {
+                string hitTag = hitColliders[i].gameObject.tag;
                 // check if collider-object is in allowed interaction objects
-                if(System.Array.IndexOf(allowedInteractionTags, hitColliders[i].gameObject.tag) == -1)
+                if(System.Array.IndexOf(allowedInteractionTags, hitTag) == -1)
                     continue;
 
                 // Trigger skill check for this player
                 int playerID = int.Parse(LayerMask.LayerToName(gameObject.layer).Replace("Player", ""));
                 GameManager.Instance.TriggerSkillCheck(playerID, false);
+
+                // Set Animator parameters
+                switch(hitTag)
+                {
+                    case "Tree":
+                        animator.SetBool("Push", true);  // TODO: when set it to false??? -> only when in contact with tree????
+                        break;
+                    case "Gate":
+                        animator.SetTrigger("lockpick");
+                        break;
+                    case "Wall":
+                        animator.SetTrigger("Climb");
+                        break;
+                    case "Narrow":
+                        animator.SetBool("squeeze", true);  // TODO: when set it to false???
+                        break;
+                }
                 
                 interactable.Interact(gameObject);  // parameter = player object for interaction
                 return true;  // interaction started
