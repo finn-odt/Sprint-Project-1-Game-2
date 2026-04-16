@@ -1,9 +1,10 @@
+using TriInspector;
 using UnityEngine;
 
 public class HandTrigger : MonoBehaviour
 {
-    [SerializeField] private PlayerController playerController;
-    [SerializeField] private string triggerLayer;
+    [SerializeField, LabelText("Player Controller Component")] private PlayerController playerController;
+    [SerializeField, LabelText("Hand-Hold-Trigger Layer")] private string triggerLayer;
 
     private void Awake()
     {

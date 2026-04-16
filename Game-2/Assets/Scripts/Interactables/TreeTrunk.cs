@@ -1,8 +1,9 @@
+using TriInspector;
 using UnityEngine;
 
 public class TreeTrunk : MonoBehaviour, IInteractable
 {
-    [SerializeField] private Rigidbody rb;
+    [SerializeField, LabelText("Rigidbody Component")] private Rigidbody rb;
 
     public void Interact(GameObject player)
     {

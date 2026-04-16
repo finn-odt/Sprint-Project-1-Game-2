@@ -30,13 +30,13 @@ public class GameManager : MonoBehaviour
     }
     public Action<GameState> GameStateChanged;
 
-    [Unit("sec")] [SerializeField] private float gameTimer;
+    [Unit("sec")] [SerializeField, LabelText("Time to complete game")] private float gameTimer;
     private float usedTime = 0f;
     public Action<float, float> GameTimerUpdated;
 
     private float sanity = 1;
     public Action<float> SanityUpdated;
-    [SerializeField] private float sanityLimit = 0.05f;
+    [SerializeField, LabelText("Sanity Game Over Limit")] private float sanityLimit = 0.05f;
 
     public float GetSanity()
     {
@@ -52,15 +52,19 @@ public class GameManager : MonoBehaviour
 
     private bool arePlayersHoldingHands;
 
-    [Unit("sec")]
-    [SerializeField] private float sanityUpdateInterval = 1f;
-    [SerializeField] private float sanityUpdateStep = 1f;
+    [Unit("sec")] [SerializeField, LabelText("Sanity Update Interval")] private float sanityUpdateInterval = 1f;
+    [SerializeField, LabelText("Sanity Update Step Size")] private float sanityUpdateStep = 1f;
     private float sanityUpdateTimer;
+
+    public Action<bool> PlayerHandsConnected;
 
     public void SetPlayersHoldingHands(bool isHoldingHands)
     {
         if (arePlayersHoldingHands == isHoldingHands)
             return;
+
+        // if changed, invoke event
+        PlayerHandsConnected?.Invoke(isHoldingHands);
 
         arePlayersHoldingHands = isHoldingHands;
         sanityUpdateTimer = sanityUpdateInterval;  // set timer to interval, to execute instantly
@@ -118,11 +122,11 @@ public class GameManager : MonoBehaviour
 
     public Action<int, int> SkillCheck;
     public Action SkillCheckFinished;
-    [Unit("sec")] [SerializeField] private float skillCheckTimePenalty;
+    [Unit("sec")] [SerializeField, LabelText("Skill Check Failure Time Penalty")] private float skillCheckTimePenalty;
 
     public void TriggerSkillCheck(int playerIndex, int buttonIndex)
     {
-        SkillCheck.Invoke(playerIndex, buttonIndex);
+        SkillCheck?.Invoke(playerIndex, buttonIndex);
     }
 
     public void TakeTimeAway()

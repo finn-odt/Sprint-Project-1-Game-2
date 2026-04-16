@@ -86,6 +86,7 @@ MonoBehaviour:
   pushPower: 1
   otherPlayer: {fileID: 0}
   maxPlayerDistance: 20
+  maxPlayerDistanceHoldingHands: 2.7
   gravity: -20
 --- !u!114 &4676443417296884576
 MonoBehaviour:
@@ -119,6 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eed739318aa13d4698e92ee2650abf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  playerMovement: {fileID: 0}
   oldMaterial: {fileID: 0}
   handIndicatorMaterial: {fileID: 2100000, guid: 33a6637b207cbfe4a981ae0e160c0018, type: 2}
 --- !u!143 &3460550891164018432

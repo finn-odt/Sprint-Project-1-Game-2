@@ -1,4 +1,5 @@
 using System.Linq;
+using TriInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
@@ -6,11 +7,11 @@ using static UnityEngine.InputSystem.InputAction;
 public class PlayerInputHandler : MonoBehaviour
 {
 
-    [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField, LabelText("Player Movement Script Component")] private PlayerMovement playerMovement;
 
-    [SerializeField] private InputActionAsset actions;
-    [SerializeField] private string actionMapName = "Player";
-    [SerializeField] private int _playerIndex = 0;
+    [SerializeField, LabelText("Player Input Action Asset")] private InputActionAsset actions;
+    [SerializeField, LabelText("Action Map Name")] private string actionMapName = "Player";
+    [SerializeField, LabelText("Player-Index"), Range(1, 2)] private int _playerIndex = 0;
 
     private InputActionMap inputMap;
     private InputAction moveAction;
@@ -26,13 +27,22 @@ public class PlayerInputHandler : MonoBehaviour
     private bool isControllable = true;  // set false, if Game Over
     private bool skillCheckActive = false;  // set true, when skill check event is triggered
 
+    private bool interactionOrLetHandGo = true;  // false, when holding hands
+
     private void Start()
     {
         if (GameManager.Instance != null) {
             GameManager.Instance.GameStateChanged += OnGameStateChange;
 
             GameManager.Instance.SkillCheck += OnSkillCheck;
+
+            GameManager.Instance.PlayerHandsConnected += OnHandConnectionChange;
         }
+    }
+
+    private void OnHandConnectionChange(bool handsConnected)
+    {
+        interactionOrLetHandGo = !handsConnected;
     }
 
     private void Awake()
@@ -73,7 +83,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void DeactivateSkillCheck()
     {
-        GameManager.Instance.SkillCheckFinished.Invoke();  // trigger end of skill check
+        GameManager.Instance.SkillCheckFinished?.Invoke();  // trigger end of skill check
 
         Debug.Log("Skill Check End");
         skillCheck1Count = skillCheck2Count = skillCheck3Count = 0;
@@ -173,8 +183,13 @@ public class PlayerInputHandler : MonoBehaviour
 
         inputMap.Disable();
 
-        if (GameManager.Instance != null)
+        if (GameManager.Instance != null) {
             GameManager.Instance.GameStateChanged -= OnGameStateChange;
+
+            GameManager.Instance.SkillCheck -= OnSkillCheck;
+
+            GameManager.Instance.PlayerHandsConnected -= OnHandConnectionChange;
+        }
     }
 
     public void OnMove(CallbackContext context)
@@ -198,19 +213,24 @@ public class PlayerInputHandler : MonoBehaviour
         if(!isControllable)
             return;
 
-        Debug.Log("Interaction wanted");
-        
-        StartInteraction();  // returns true, if interaction was started
+        if(interactionOrLetHandGo)
+            StartInteraction();  // returns true, if interaction was started
+        else
+            GameManager.Instance.SetPlayersHoldingHands(false);  // let go of hands
     }
 
-    public Transform interactionCollider;  // collider for interaction
-    public LayerMask interactionLayer;  // to which layer the collision is restricted
+    [SerializeField, LabelText("Interaction-Check Collider")] private Transform interactionCollider;  // collider for interaction
+    [SerializeField, LabelText("Interaction-Collider Layermask")] private LayerMask interactionLayer;  // to which layer the collision is restricted
 
     private int lastHitColliderCount = 0;
 
     // Collision Detection for Interactable Game Objects nearby
     private void InteractionCollisionDetection()
     {
+        // don't show indicator, when holding hands
+        if(!interactionOrLetHandGo)
+            return;
+
         Collider[] hitColliders = Physics.OverlapBox(interactionCollider.position,
             interactionCollider.localScale,
             Quaternion.identity,
@@ -218,7 +238,7 @@ public class PlayerInputHandler : MonoBehaviour
 
         // deactivate indicator, when none are in radius
         if(hitColliders.Length == 0 && lastHitColliderCount != hitColliders.Length)
-            GameManager.Instance?.InteractionStatusChanged.Invoke(null);
+            GameManager.Instance?.InteractionStatusChanged?.Invoke(null);
 
         lastHitColliderCount = hitColliders.Length;
         for (int i = 0; i < hitColliders.Length; i++)
@@ -228,7 +248,7 @@ public class PlayerInputHandler : MonoBehaviour
             if (interactable != null)
             {
                 // set transform of interactable for UI Indicator
-                GameManager.Instance?.InteractionStatusChanged.Invoke(hitColliders[i].transform);
+                GameManager.Instance?.InteractionStatusChanged?.Invoke(hitColliders[i].transform);
             }
         }
     }
