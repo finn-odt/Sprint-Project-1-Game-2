@@ -44,8 +44,6 @@ public class MenuInputHandler : MonoBehaviour
             return;
         }
 
-        Debug.Log(currState);
-
         if(currState == GameState.Pause) {
             GameManager.Instance.ContinueGame();  // back to game
         } else {

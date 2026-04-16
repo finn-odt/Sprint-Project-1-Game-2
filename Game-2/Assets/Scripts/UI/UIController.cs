@@ -43,6 +43,8 @@ public class UIController : MonoBehaviour
         pauseCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(false);
         winCanvas.gameObject.SetActive(false);
+
+        OnConnectionModeChange();
     }
 
     private void OnConnectionModeChange()
@@ -149,7 +151,7 @@ public class UIController : MonoBehaviour
         }
     }
 
-    private void OnSkillCheckEnter(int playerIndex, int buttonIndex)
+    private void OnSkillCheckEnter(int playerIndex, int buttonIndex, bool triggeredByNPC)
     {
         // get player instance
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -165,7 +167,7 @@ public class UIController : MonoBehaviour
         // show just the button that is needed
         int i = 1;
         // 6 elements in total (first 3 -> Player1, second 3 -> Player2)
-        int modifiedButtonIndex = ((playerIndex - 1) * 2) + buttonIndex;
+        int modifiedButtonIndex = ((playerIndex - 1) * 3) + buttonIndex;
         foreach (Transform child in skillCheckIndicator.transform)
         {
             child.gameObject.SetActive(i == modifiedButtonIndex);

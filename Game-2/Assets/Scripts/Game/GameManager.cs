@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour
     [SerializeField, LabelText("Sanity Game Over Limit")] private float sanityLimit = 0.05f;
     
     [SerializeField, LabelText("Maximum Player Distance"), Range(5f, 50f)] private float maxPlayerDistance = 20;
+    
+    public Action<float> CameraTurnAngle;
 
     public float GetMaximumPlayerDistance()
     {
@@ -108,9 +110,14 @@ public class GameManager : MonoBehaviour
         // Check Loosing Condition
         if(sanity < sanityLimit || usedTime > gameTimer)
         {
-            gameState = GameState.Lose;
-            GameStateChanged?.Invoke(gameState);
+            GameOver();
         }
+    }
+
+    public void GameOver()
+    {
+        gameState = GameState.Lose;
+        GameStateChanged?.Invoke(gameState);
     }
 
     public void RestartGame()
@@ -133,18 +140,25 @@ public class GameManager : MonoBehaviour
         GameStateChanged?.Invoke(gameState);
     }
 
-    public Action<int, int> SkillCheck;
+    public Action<int, int, bool> SkillCheck;
     public Action SkillCheckFinished;
     [Unit("sec")] [SerializeField, LabelText("Skill Check Failure Time Penalty")] private float skillCheckTimePenalty;
+    [SerializeField, LabelText("Skill Check Failure Sanity Penalty"), Range(0f, 1f)] private float skillCheckSanityPenalty;
 
-    public void TriggerSkillCheck(int playerIndex, int buttonIndex)
+    public void TriggerSkillCheck(int playerIndex, bool triggeredByNPC)
     {
-        SkillCheck?.Invoke(playerIndex, buttonIndex);
+        int buttonIndex = UnityEngine.Random.Range(1, 4);  // random skill check button
+        SkillCheck?.Invoke(playerIndex, buttonIndex, triggeredByNPC);
     }
 
     public void TakeTimeAway()
     {
         usedTime += skillCheckTimePenalty;
+    }
+
+    public void TakeSanityAway()
+    {
+        sanity -= skillCheckSanityPenalty;
     }
 
 
@@ -173,17 +187,14 @@ public class GameManager : MonoBehaviour
         GameManager.Instance.PlayerGetsChased -= OnPlayerGetsChased;
     }
 
-    private void OnPlayerGetsChased()
-    {
-        Debug.Log("Player is being chased!");
-    }
-
     */
 
     private void Start()
     {
-        CameraSwitcher.Instance.SwitchToGameplay();
+        //CameraSwitcher.Instance.SwitchToGameplay();
         //CameraSwitcher.Instance.SwitchToOnShoulder();
+
+        //CameraSwitcher.Instance.SetCameraTargetAngle(90);
 
         // get player instances
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");

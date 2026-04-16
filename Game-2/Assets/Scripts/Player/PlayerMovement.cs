@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     // GRAVITY
     [SerializeField, LabelText("Gravity")] private float gravity = -20f;
     private float yVelocity;
+    private float currentCameraTurnAngle = 0;
 
     public void SetMovement(Vector2 dir)
     {
@@ -64,7 +65,8 @@ public class PlayerMovement : MonoBehaviour
         Vector3 pos = transform.position;
 
         // ------- MOVEMENT -------        
-        Vector3 dir = new Vector3(moveDir.x, 0, moveDir.y);  // remove height movement
+        Vector3 inputDir = new Vector3(moveDir.x, 0, moveDir.y);  // remove height movement
+        Vector3 dir = Quaternion.Euler(0f, currentCameraTurnAngle, 0f) * inputDir;  // turn controls according to camera
         dir.Normalize();  // normalize for better speed handling
 
         Vector3 move = dir * speed * Time.deltaTime;  // calculate movement
@@ -81,5 +83,24 @@ public class PlayerMovement : MonoBehaviour
         if(Vector3.Distance(otherPos, pos+move) < GameManager.Instance?.GetMaximumPlayerDistance())
             controller.Move(move);  // move with character controller (animator)
         // TODO: else { call for other player }
+    }
+
+    private void Start()
+    {
+        if (GameManager.Instance != null) {
+            GameManager.Instance.CameraTurnAngle += OnCameraTurn;
+        }
+    }
+    
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null) {
+            GameManager.Instance.CameraTurnAngle -= OnCameraTurn;
+        }
+    }
+
+    private void OnCameraTurn(float angle)
+    {
+        currentCameraTurnAngle = angle;
     }
 }

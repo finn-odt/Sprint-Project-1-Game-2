@@ -11,7 +11,6 @@ public class TitleScreenHandler : MonoBehaviour
 
     public void OnGameStart(CallbackContext context)
     {
-        Debug.Log("Test");
         SceneManager.LoadScene(firstSceneName);
     }
 
