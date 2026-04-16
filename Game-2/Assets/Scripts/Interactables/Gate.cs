@@ -17,7 +17,7 @@ public class Gate : MonoBehaviour, IInteractable
         // TODO: somehow start animation of player for lock picking
 
 
-        // TODO: start animation of gate swinging open
+        // start animation of gate swinging open
         if(gateAnimator != null) {
             gateAnimator.SetTrigger("openGate");
             StartCoroutine(WaitForIdleOpen());
