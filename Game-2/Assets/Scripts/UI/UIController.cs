@@ -2,10 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using TriInspector;
+using TMPro;
+using System;
+using System.Collections;
 
 public class UIController : MonoBehaviour
 {
-    [SerializeField, LabelText("Time UI-Slider")] private Slider gameTimerSlider;
+    [SerializeField, LabelText("Timer UI-Text")] private GameObject timerTextObject;
+    private TextMeshProUGUI timerText;
     [SerializeField, LabelText("Sanity UI-Slider")] private Slider sanitySlider;
     [SerializeField, LabelText("Interaction Indicator")] private GameObject interactionIndicator;
     [SerializeField, LabelText("Skill Check Indicator")] private GameObject skillCheckIndicator;
@@ -30,7 +34,11 @@ public class UIController : MonoBehaviour
 
             GameManager.Instance.SkillCheck += OnSkillCheckEnter;
             GameManager.Instance.SkillCheckFinished += OnSkillCheckExit;
+
+            GameManager.Instance.TimePenalty += OnTimePenalty;
         }
+
+        timerText = timerTextObject.GetComponent<TextMeshProUGUI>();
 
         // deactivate indicators
         interactionIndicator.SetActive(false);
@@ -77,17 +85,21 @@ public class UIController : MonoBehaviour
         GameManager.Instance.GameStateChanged -= OnGameStateChange;
         GameManager.Instance.SkillCheck -= OnSkillCheckEnter;
         GameManager.Instance.SkillCheckFinished -= OnSkillCheckExit;
+        GameManager.Instance.TimePenalty -= OnTimePenalty;
     }
 
     private void DisplayGameTimer(float usedTime, float totalTime)
     {
-        // first: usedTime, second: totalTime
-        float percentage = usedTime / totalTime;
+        float timeLeft = totalTime - usedTime;
+        string formatted = TimeSpan.FromSeconds(timeLeft).ToString(@"mm\:ss");
 
-        if(1f - percentage > 0f)
-        {
-            gameTimerSlider.gameObject.SetActive(true);
-            gameTimerSlider.value = 1f - percentage;
+        if(timerText != null) {
+            timerText.text = formatted;
+
+            // change timer color, when only 10 seconds are left
+            if(timeLeft <= 10) {                 
+                timerText.color = new Color(1f, 0.4f, 0);
+            }
         }
     }
 
@@ -111,7 +123,7 @@ public class UIController : MonoBehaviour
         interactionIndicator.SetActive(true);
 
         // place indicator over interactable object
-        interactionIndicator.transform.localPosition = GetScreenCoordinatesOfPlayer(interactable.position, new Vector3(0, 0.5f, 0));
+        interactionIndicator.transform.localPosition = GetScreenCoordinatesOfPlayer(interactable.position, new Vector3(0, 0, 0));
     }
 
     private void OnGameStateChange(GameState newState)
@@ -194,5 +206,16 @@ public class UIController : MonoBehaviour
         );
 
         return localPos;
+    }
+
+    private void OnTimePenalty()
+    {
+        timerText.color = new Color(1f, 0, 0);
+        StartCoroutine(RecolorTimerText(2f));  // delay in seconds
+    }
+    private IEnumerator RecolorTimerText(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        timerText.color = new Color(1f, 1f, 1f);
     }
 }

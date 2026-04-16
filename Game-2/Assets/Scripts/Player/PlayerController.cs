@@ -4,11 +4,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-
-    [SerializeField, LabelText("Player Movement Script Component")] private PlayerMovement playerMovement;
     private bool areHandsConnected = false;
-    public Material oldMaterial;
-    [SerializeField, LabelText("Material-Indicator Hand-Holding")] private Material handIndicatorMaterial;
 
     private MeshRenderer meshRenderer;
 

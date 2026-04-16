@@ -1274,15 +1274,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 631178428929003971, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 631178428929003971, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1189802021566324163, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
       propertyPath: m_Name
       value: UI
+      objectReference: {fileID: 0}
+    - target: {fileID: 3600304218425121204, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4024283251532443925, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1291,6 +1295,22 @@ PrefabInstance:
     - target: {fileID: 4024283251532443925, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4138846236322809520, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5769453917017544705, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7117784258118335618, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7235658455286225101, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7262716961703947104, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1333,6 +1353,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7433377020513057863, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7910804355526399074, guid: 52392e0096fda354cb75f00a9df7f548, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}

@@ -151,8 +151,10 @@ public class GameManager : MonoBehaviour
         SkillCheck?.Invoke(playerIndex, buttonIndex, triggeredByNPC);
     }
 
+    public Action TimePenalty;
     public void TakeTimeAway()
     {
+        TimePenalty?.Invoke();
         usedTime += skillCheckTimePenalty;
     }
 
