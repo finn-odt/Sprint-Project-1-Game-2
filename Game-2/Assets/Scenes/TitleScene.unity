@@ -823,7 +823,7 @@ RectTransform:
   m_GameObject: {fileID: 436473629}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7717433, y: 0.7717433, z: 0.7717433}
+  m_LocalScale: {x: 0.8740764, y: 0.8740764, z: 0.8740764}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 704608107}
@@ -855,15 +855,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Spiked
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e4bc84d8454aeff43b841e4ee40e5a19, type: 2}
+  m_sharedMaterial: {fileID: -1212888770941158860, guid: e4bc84d8454aeff43b841e4ee40e5a19, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291022809
-  m_fontColor: {r: 0.8490566, g: 0.8099323, b: 0.76495194, a: 1}
+    rgba: 2109984729
+  m_fontColor: {r: 0.8490566, g: 0.8099323, b: 0.76495194, a: 0.49019608}
   m_enableVertexGradient: 1
   m_colorMode: 0
   m_fontColorGradient:
@@ -880,8 +880,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 200
-  m_fontSizeBase: 200
+  m_fontSize: 268
+  m_fontSizeBase: 268
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1954,7 +1954,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -61}
+  m_AnchoredPosition: {x: 0, y: -70}
   m_SizeDelta: {x: 1600, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1042276771
@@ -1986,8 +1986,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291088345
-  m_fontColor: {r: 0.8509804, g: 0.8117647, b: 0.76862746, a: 1}
+    rgba: 3016019929
+  m_fontColor: {r: 0.8509804, g: 0.8117647, b: 0.76862746, a: 0.7019608}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2010,7 +2010,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
