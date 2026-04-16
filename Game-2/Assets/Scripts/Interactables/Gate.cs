@@ -1,7 +1,9 @@
+using TriInspector;
 using UnityEngine;
 
 public class Gate : MonoBehaviour, IInteractable
 {
+    [SerializeField, LabelText("Animator for Gate")] private Animator animator;
 
     public void Interact(GameObject player)
     {
