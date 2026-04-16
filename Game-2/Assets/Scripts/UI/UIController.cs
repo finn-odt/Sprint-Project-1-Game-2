@@ -43,6 +43,8 @@ public class UIController : MonoBehaviour
         pauseCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(false);
         winCanvas.gameObject.SetActive(false);
+
+        OnConnectionModeChange();
     }
 
     private void OnConnectionModeChange()
@@ -59,6 +61,8 @@ public class UIController : MonoBehaviour
                 .Where(t => t.CompareTag(tag))
                 .Select(t => t.gameObject)
                 .ToArray();
+
+            Debug.Log(objs.Length);
 
             foreach(GameObject obj in objs)
             {

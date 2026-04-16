@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour
     [SerializeField, LabelText("Sanity Game Over Limit")] private float sanityLimit = 0.05f;
     
     [SerializeField, LabelText("Maximum Player Distance"), Range(5f, 50f)] private float maxPlayerDistance = 20;
+    
+    public Action<float> CameraTurnAngle;
 
     public float GetMaximumPlayerDistance()
     {
@@ -182,8 +184,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        CameraSwitcher.Instance.SwitchToGameplay();
+        //CameraSwitcher.Instance.SwitchToGameplay();
         //CameraSwitcher.Instance.SwitchToOnShoulder();
+
+        //CameraSwitcher.Instance.SetCameraTargetAngle(90);
 
         // get player instances
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
