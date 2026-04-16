@@ -12,6 +12,7 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField, LabelText("Player Input Action Asset")] private InputActionAsset actions;
     [SerializeField, LabelText("Action Map Name")] private string actionMapName = "Player";
     [SerializeField, LabelText("Player-Index"), Range(1, 2)] private int _playerIndex = 0;
+    [SerializeField, LabelText("Allowed Interaction Tags")] private string[] allowedInteractionTags;
 
     private InputActionMap inputMap;
     private InputAction moveAction;
@@ -232,6 +233,10 @@ public class PlayerInputHandler : MonoBehaviour
         lastHitColliderCount = hitColliders.Length;
         for (int i = 0; i < hitColliders.Length; i++)
         {
+            // check if collider-object is in allowed interaction objects
+            if(System.Array.IndexOf(allowedInteractionTags, hitColliders[i].gameObject.tag) == -1)
+                continue;
+
             // execute interaction
             IInteractable interactable = hitColliders[i].GetComponentInChildren<IInteractable>();
             if (interactable != null)
@@ -255,6 +260,10 @@ public class PlayerInputHandler : MonoBehaviour
             IInteractable interactable = hitColliders[i].GetComponentInChildren<IInteractable>();
             if (interactable != null)
             {
+                // check if collider-object is in allowed interaction objects
+                if(System.Array.IndexOf(allowedInteractionTags, hitColliders[i].gameObject.tag) == -1)
+                    continue;
+
                 // Trigger skill check for this player
                 int playerID = int.Parse(LayerMask.LayerToName(gameObject.layer).Replace("Player", ""));
                 GameManager.Instance.TriggerSkillCheck(playerID, false);

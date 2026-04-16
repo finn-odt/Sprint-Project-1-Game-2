@@ -243,8 +243,6 @@ MonoBehaviour:
   speed: 5
   pushPower: 0.1
   otherPlayer: {fileID: 0}
-  maxPlayerDistance: 20
-  maxPlayerDistanceHoldingHands: 2.7
   gravity: -20
 --- !u!114 &3361072388848943697
 MonoBehaviour:
@@ -262,6 +260,9 @@ MonoBehaviour:
   actions: {fileID: -944628639613478452, guid: a63e7170c47fb7241bff4040ab4d7d54, type: 3}
   actionMapName: Player
   _playerIndex: 2
+  allowedInteractionTags:
+  - Gate
+  - Narrow
   interactionCollider: {fileID: 5701992622290065450}
   interactionLayer:
     serializedVersion: 2
@@ -278,9 +279,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eed739318aa13d4698e92ee2650abf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  playerMovement: {fileID: 0}
-  oldMaterial: {fileID: 0}
-  handIndicatorMaterial: {fileID: 2100000, guid: bb9d9ad5053fb7d4bad24199d4f01f1e, type: 2}
 --- !u!143 &5166162934824813308
 CharacterController:
   m_ObjectHideFlags: 0
