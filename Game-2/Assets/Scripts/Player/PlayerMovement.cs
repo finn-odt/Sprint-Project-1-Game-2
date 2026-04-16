@@ -12,36 +12,11 @@ public class PlayerMovement : MonoBehaviour
     //[SerializeField] private float rotationSpeed;
 
     [SerializeField, LabelText("Other Player Object")] private GameObject otherPlayer;
-    [SerializeField, LabelText("Maximum Player Distance"), Range(0f, 50f)] private float maxPlayerDistance = 20;
-    [SerializeField, LabelText("Maximum Player Distance (hand-held)"), Range(0f, 20f)] private float maxPlayerDistanceHoldingHands = 1.8f;
-    private float maxDistanceBetweenPlayers;
 
 
     // GRAVITY
     [SerializeField, LabelText("Gravity")] private float gravity = -20f;
     private float yVelocity;
-
-    private void Start()
-    {
-        maxDistanceBetweenPlayers = maxPlayerDistance;
-        if (GameManager.Instance != null) {
-            GameManager.Instance.PlayerHandsConnected += OnHandConnectionChange;
-        }
-    }
-    private void OnDisable()
-    {
-        if (GameManager.Instance != null) {
-            GameManager.Instance.PlayerHandsConnected -= OnHandConnectionChange;
-        }
-    }
-
-    private void OnHandConnectionChange(bool handsConnected)
-    {
-        if(handsConnected)
-            maxDistanceBetweenPlayers = maxPlayerDistanceHoldingHands;  // shorter distance while holding hands
-        else
-            maxDistanceBetweenPlayers = maxPlayerDistance;  // long distance in normal play
-    }
 
     public void SetMovement(Vector2 dir)
     {
@@ -103,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
         move.y = yVelocity;
 
         // make move only, when players are in the distance interval
-        if(Vector3.Distance(otherPos, pos+move) < maxDistanceBetweenPlayers)
+        if(Vector3.Distance(otherPos, pos+move) < GameManager.Instance?.GetMaximumPlayerDistance())
             controller.Move(move);  // move with character controller (animator)
         // TODO: else { call for other player }
     }

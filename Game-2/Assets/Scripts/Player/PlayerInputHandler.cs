@@ -27,22 +27,13 @@ public class PlayerInputHandler : MonoBehaviour
     private bool isControllable = true;  // set false, if Game Over
     private bool skillCheckActive = false;  // set true, when skill check event is triggered
 
-    private bool interactionOrLetHandGo = true;  // false, when holding hands
-
     private void Start()
     {
         if (GameManager.Instance != null) {
             GameManager.Instance.GameStateChanged += OnGameStateChange;
 
             GameManager.Instance.SkillCheck += OnSkillCheck;
-
-            GameManager.Instance.PlayerHandsConnected += OnHandConnectionChange;
         }
-    }
-
-    private void OnHandConnectionChange(bool handsConnected)
-    {
-        interactionOrLetHandGo = !handsConnected;
     }
 
     private void Awake()
@@ -187,8 +178,6 @@ public class PlayerInputHandler : MonoBehaviour
             GameManager.Instance.GameStateChanged -= OnGameStateChange;
 
             GameManager.Instance.SkillCheck -= OnSkillCheck;
-
-            GameManager.Instance.PlayerHandsConnected -= OnHandConnectionChange;
         }
     }
 
@@ -213,10 +202,7 @@ public class PlayerInputHandler : MonoBehaviour
         if(!isControllable)
             return;
 
-        if(interactionOrLetHandGo)
-            StartInteraction();  // returns true, if interaction was started
-        else
-            GameManager.Instance.SetPlayersHoldingHands(false);  // let go of hands
+        StartInteraction();  // returns true, if interaction was started
     }
 
     [SerializeField, LabelText("Interaction-Check Collider")] private Transform interactionCollider;  // collider for interaction
@@ -227,10 +213,6 @@ public class PlayerInputHandler : MonoBehaviour
     // Collision Detection for Interactable Game Objects nearby
     private void InteractionCollisionDetection()
     {
-        // don't show indicator, when holding hands
-        if(!interactionOrLetHandGo)
-            return;
-
         Collider[] hitColliders = Physics.OverlapBox(interactionCollider.position,
             interactionCollider.localScale,
             Quaternion.identity,

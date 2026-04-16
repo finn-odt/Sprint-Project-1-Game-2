@@ -114,7 +114,7 @@ public class UIController : MonoBehaviour
 
     private void OnGameStateChange(GameState newState)
     {
-        if(newState == GameState.Playing)
+        if(newState == GameState.Intro)  // TODO: change back to Playing
         {
             // activate sanity slider after intro
             sanitySlider.gameObject.SetActive(false);

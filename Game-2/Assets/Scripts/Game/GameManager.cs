@@ -37,6 +37,13 @@ public class GameManager : MonoBehaviour
     private float sanity = 1;
     public Action<float> SanityUpdated;
     [SerializeField, LabelText("Sanity Game Over Limit")] private float sanityLimit = 0.05f;
+    
+    [SerializeField, LabelText("Maximum Player Distance"), Range(5f, 50f)] private float maxPlayerDistance = 20;
+
+    public float GetMaximumPlayerDistance()
+    {
+        return maxPlayerDistance;
+    }
 
     public float GetSanity()
     {
@@ -44,7 +51,11 @@ public class GameManager : MonoBehaviour
     }
     private void DecreaseSanity()
     {
-        sanity -= sanityUpdateStep;
+        // calculate factor by distance of players
+        float dist = Vector3.Distance(playerObject1.transform.position, playerObject2.transform.position);
+        float playerDistanceFactor = dist / maxPlayerDistance;  // between 0 and 1
+
+        sanity -= sanityUpdateStep * playerDistanceFactor;
         SanityUpdated?.Invoke(sanity);
     }
 
@@ -53,10 +64,12 @@ public class GameManager : MonoBehaviour
     private bool arePlayersHoldingHands;
 
     [Unit("sec")] [SerializeField, LabelText("Sanity Update Interval")] private float sanityUpdateInterval = 1f;
-    [SerializeField, LabelText("Sanity Update Step Size")] private float sanityUpdateStep = 1f;
+    [SerializeField, LabelText("Maximum Sanity Update Step Size")] private float sanityUpdateStep = 1f;
     private float sanityUpdateTimer;
 
     public Action<bool> PlayerHandsConnected;
+
+    private GameObject playerObject1, playerObject2;
 
     public void SetPlayersHoldingHands(bool isHoldingHands)
     {
@@ -79,7 +92,7 @@ public class GameManager : MonoBehaviour
         }
 
         // don't update timer, when paused/game over/won/intro-level
-        if(gameState == GameState.Playing) {
+        if(gameState == GameState.Playing || gameState == GameState.Intro) {  // TODO: remove Intro
             // if players are not holding hands, do sanity meter updates
             if(!arePlayersHoldingHands) {
                 sanityUpdateTimer += Time.deltaTime;
@@ -171,6 +184,14 @@ public class GameManager : MonoBehaviour
     {
         CameraSwitcher.Instance.SwitchToGameplay();
         //CameraSwitcher.Instance.SwitchToOnShoulder();
+
+        // get player instances
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        if(players.Length == 2)
+        {
+            playerObject1 = players[0];
+            playerObject2 = players[1];
+        }
     }
 
     private void Awake()

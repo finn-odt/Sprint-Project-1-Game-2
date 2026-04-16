@@ -46,8 +46,6 @@ public class PlayerController : MonoBehaviour
 
         areHandsConnected = true;
         GameManager.Instance.SetPlayersHoldingHands(areHandsConnected);
-
-        // disabling hand holding is controlled by PlayerInputHandler.cs
         
         // TODO: replace with animation of hand holding?
         //oldMaterial = meshRenderer.material;
@@ -56,16 +54,12 @@ public class PlayerController : MonoBehaviour
 
     public void OnHandTriggerExit(Collider other)
     {
-        // do nothing, because button-press for letting go
-
-        /*
         if(!areHandsConnected)
             return;
 
         areHandsConnected = false;
         GameManager.Instance.SetPlayersHoldingHands(areHandsConnected);
         
-        meshRenderer.material = oldMaterial;
-        */
+        //meshRenderer.material = oldMaterial;
     }
 }
