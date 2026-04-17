@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using TriInspector;
 using UnityEngine;
@@ -266,7 +267,8 @@ public class PlayerInputHandler : MonoBehaviour
                 switch(hitTag)
                 {
                     case "Tree":
-                        animator.SetBool("Push", true);  // TODO: when set it to false??? -> only when in contact with tree????
+                        animator.SetBool("Push", true);
+                        StartCoroutine(DeactivateAnimation(3f, "Push"));  // set false after 3s
                         break;
                     case "Gate":
                         animator.SetTrigger("lockpick");
@@ -275,7 +277,8 @@ public class PlayerInputHandler : MonoBehaviour
                         animator.SetTrigger("Climb");
                         break;
                     case "Narrow":
-                        animator.SetBool("squeeze", true);  // TODO: when set it to false???
+                        animator.SetBool("squeeze", true);
+                        StartCoroutine(DeactivateAnimation(6f, "squeeze"));  // set false after 6s
                         break;
                 }
                 
@@ -285,5 +288,12 @@ public class PlayerInputHandler : MonoBehaviour
         }
         
         return false;
+    }
+
+    private IEnumerator DeactivateAnimation(float delay, string animtorParameter)
+    {
+        yield return new WaitForSeconds(delay);
+
+        animator.SetBool(animtorParameter, false);
     }
 }
