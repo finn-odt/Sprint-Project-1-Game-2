@@ -7,7 +7,5 @@ public class ClimbingWall : MonoBehaviour, IInteractable
     {
         // remove Layer for clearing interactability
         gameObject.layer = LayerMask.NameToLayer("UsedInteractable");
-
-        // TODO: start climb animation, wait for end -> teleport behind wall
     }
 }

@@ -270,7 +270,7 @@ public class PlayerInputHandler : MonoBehaviour
                 {
                     case "Tree":
                         animator.SetBool("Push", true);
-                        StartCoroutine(DeactivateAnimation(3f, "Push"));  // set false after 3s
+                        StartCoroutine(DeactivateAnimation(1.5f, "Push"));  // set false after 3s
                         break;
                     case "Gate":
                         animator.SetTrigger("lockpick");
@@ -302,7 +302,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private IEnumerator TeleportBehindWall(GameObject walls)
     {
-        yield return new WaitForSeconds(0.1f); // wait for 0.1s
+        yield return new WaitForSeconds(0.3f); // wait for 0.3s
 
         while (animator != null)
         {
@@ -313,23 +313,9 @@ public class PlayerInputHandler : MonoBehaviour
                 // climb animation is finished -> teleport behind wall
                 Vector3 dir = walls.transform.position - transform.position;  // from player to wall
                 dir.y = 0f;  // remove vertical movement
+                dir.Normalize();
 
-                BoxCollider box = walls.GetComponent<BoxCollider>();
-                Vector3 dirNorm = dir.normalized;
-                // World-space half-axes of the box
-                Vector3 right = walls.transform.right * box.size.x * 0.5f * walls.transform.lossyScale.x;
-                Vector3 up    = walls.transform.up    * box.size.y * 0.5f * walls.transform.lossyScale.y;
-                Vector3 forward = walls.transform.forward * box.size.z * 0.5f * walls.transform.lossyScale.z;
-
-                // Project box half-extents onto direction
-                float halfWidthInDir =
-                    Mathf.Abs(Vector3.Dot(dirNorm, right)) +
-                    Mathf.Abs(Vector3.Dot(dirNorm, up)) +
-                    Mathf.Abs(Vector3.Dot(dirNorm, forward));
-
-                float widthInDir = halfWidthInDir * 2f;
-
-                transform.position += dir * 1.8f * widthInDir;
+                transform.position += dir * 2f;
                 yield break;
             }
 
