@@ -14,9 +14,6 @@ public class Gate : MonoBehaviour, IInteractable
 
     public void Interact(GameObject player)
     {
-        // TODO: somehow start animation of player for lock picking
-
-
         StartCoroutine(StartOpeningAnimation(0.3f));
 
         // remove Layer for clearing interactability

@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour
         }
 
         // don't update timer, when paused/game over/won/intro-level
-        if(gameState == GameState.Playing || gameState == GameState.Intro) {  // TODO: remove Intro
+        if(gameState == GameState.Playing) {  // TODO: remove Intro
             // if players are not holding hands, do sanity meter updates
             if(!arePlayersHoldingHands) {
                 sanityUpdateTimer += Time.deltaTime;
@@ -118,6 +118,13 @@ public class GameManager : MonoBehaviour
     {
         gameState = GameState.Lose;
         GameStateChanged?.Invoke(gameState);
+    }
+    public void ChangeStateTo(GameState newState)
+    {
+        if(newState == GameState.Playing && gameState == GameState.Intro || gameState == GameState.Playing) {
+            gameState = newState;
+            GameStateChanged?.Invoke(gameState);
+        }
     }
 
     public void RestartGame()
@@ -151,7 +158,7 @@ public class GameManager : MonoBehaviour
         SkillCheck?.Invoke(playerIndex, buttonIndex, triggeredByNPC);
     }
 
-    public Action TimePenalty;
+    public Action TimePenalty, SanityPenalty;
     public void TakeTimeAway()
     {
         TimePenalty?.Invoke();
@@ -160,6 +167,7 @@ public class GameManager : MonoBehaviour
 
     public void TakeSanityAway()
     {
+        SanityPenalty?.Invoke();
         sanity -= skillCheckSanityPenalty;
     }
 

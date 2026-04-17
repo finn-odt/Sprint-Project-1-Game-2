@@ -36,6 +36,7 @@ public class UIController : MonoBehaviour
             GameManager.Instance.SkillCheckFinished += OnSkillCheckExit;
 
             GameManager.Instance.TimePenalty += OnTimePenalty;
+        GameManager.Instance.SanityPenalty += OnSanityPenalty;
         }
 
         timerText = timerTextObject.GetComponent<TextMeshProUGUI>();
@@ -86,6 +87,7 @@ public class UIController : MonoBehaviour
         GameManager.Instance.SkillCheck -= OnSkillCheckEnter;
         GameManager.Instance.SkillCheckFinished -= OnSkillCheckExit;
         GameManager.Instance.TimePenalty -= OnTimePenalty;
+        GameManager.Instance.SanityPenalty -= OnSanityPenalty;
     }
 
     private void DisplayGameTimer(float usedTime, float totalTime)
@@ -128,7 +130,7 @@ public class UIController : MonoBehaviour
 
     private void OnGameStateChange(GameState newState)
     {
-        if(newState == GameState.Intro)  // TODO: change back to Playing
+        if(newState == GameState.Playing)
         {
             // activate sanity slider after intro
             sanitySlider.gameObject.SetActive(false);
@@ -217,5 +219,47 @@ public class UIController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         timerText.color = new Color(1f, 1f, 1f);
+    }
+
+    private void OnSanityPenalty()
+    {
+        Transform found = null;
+        foreach (Transform t in sanitySlider.GetComponentsInChildren<Transform>(true))
+        {
+            if (t.CompareTag("myTag"))
+            {
+                found = t;
+                break;
+            }
+        }
+        if(found != null)
+        {
+            Image image = found.GetComponent<Image>();
+            if(image != null) {
+                Color saveColor = image.color;
+                Color indicatorColor = new Color(1f, 0f, 0f);
+                image.color = indicatorColor;
+
+                StartCoroutine(RecolorSanitySlider(0.2f, image, indicatorColor, saveColor));  // delay in seconds
+            }
+        }
+    }
+    private IEnumerator RecolorSanitySlider(float delay, Image image, Color indicatorColor, Color initColor)
+    {
+        yield return new WaitForSeconds(delay);
+
+        int n = 4;
+        int i = 0;
+        while(i < n)
+        {
+            if(i % 2 == 0)
+                image.color = initColor;
+            else
+                image.color = indicatorColor;
+            i++;
+            yield return new WaitForSeconds(delay);
+        }
+
+        image.color = initColor;
     }
 }

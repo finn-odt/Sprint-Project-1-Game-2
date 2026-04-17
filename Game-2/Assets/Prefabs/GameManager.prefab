@@ -50,7 +50,7 @@ MonoBehaviour:
   sanityLimit: 0.05
   maxPlayerDistance: 20
   sanityUpdateInterval: 0.1
-  sanityUpdateStep: 0.001
+  sanityUpdateStep: 0.004
   skillCheckTimePenalty: 5
   skillCheckSanityPenalty: 0.1
 --- !u!1 &8195141899572379347

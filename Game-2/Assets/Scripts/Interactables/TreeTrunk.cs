@@ -16,8 +16,6 @@ public class TreeTrunk : MonoBehaviour, IInteractable
         // remove Layer for clearing interactability
         gameObject.layer = LayerMask.NameToLayer("UsedInteractable");
 
-        // TODO: start push animation [but when to stop???]
-
         Debug.Log("Tree Trunk now physical");
     }
 }

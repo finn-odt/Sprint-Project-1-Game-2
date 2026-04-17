@@ -12,7 +12,5 @@ public class NarrowSpace : MonoBehaviour, IInteractable
 
         // remove Layer for clearing interactability
         gameObject.layer = LayerMask.NameToLayer("UsedInteractable");
-
-        // TODO: start squeeze animation [when to stop?]
     }
 }

@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
         areHandsConnected = true;
         GameManager.Instance.SetPlayersHoldingHands(areHandsConnected);
         
-        // TODO: replace with animation of hand holding?
+        // OPTIONAL: replace with animation of hand holding?
         //oldMaterial = meshRenderer.material;
         //meshRenderer.material = handIndicatorMaterial;
     }
