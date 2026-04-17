@@ -36,7 +36,7 @@ public class UIController : MonoBehaviour
             GameManager.Instance.SkillCheckFinished += OnSkillCheckExit;
 
             GameManager.Instance.TimePenalty += OnTimePenalty;
-        GameManager.Instance.SanityPenalty += OnSanityPenalty;
+            GameManager.Instance.SanityPenalty += OnSanityPenalty;
         }
 
         timerText = timerTextObject.GetComponent<TextMeshProUGUI>();
@@ -226,7 +226,7 @@ public class UIController : MonoBehaviour
         Transform found = null;
         foreach (Transform t in sanitySlider.GetComponentsInChildren<Transform>(true))
         {
-            if (t.CompareTag("myTag"))
+            if (t.CompareTag("SanitySliderFill"))
             {
                 found = t;
                 break;
