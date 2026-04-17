@@ -79,12 +79,16 @@ public class PlayerMovement : MonoBehaviour
 
         move.y = yVelocity;
 
-        transform.LookAt(pos+move);
+        // rotate in moving direction
+        Vector3 flatMove = new Vector3(move.x, 0f, move.z);
+        if (flatMove != Vector3.zero)
+        {
+            transform.LookAt(transform.position + flatMove);
+        }
 
         // make move only, when players are in the distance interval
         if(Vector3.Distance(otherPos, pos+move) < GameManager.Instance?.GetMaximumPlayerDistance())
             controller.Move(move);  // move with character controller (animator)
-        // TODO: else { call for other player }
     }
 
     private void Start()

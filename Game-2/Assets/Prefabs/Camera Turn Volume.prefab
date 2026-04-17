@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GizmoIndicator
   radius: 0
-  color: {r: 0.5245282, g: 0.5245282, b: 0.5245282, a: 0.38431373}
+  color: {r: 0.5245282, g: 0.5245282, b: 0.5245282, a: 0.12941177}
   usePosAndScaleOfObject: 1
   drawFilled: 1
   drawWire: 1

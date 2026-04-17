@@ -85,6 +85,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GizmoIndicator
   radius: 0.5
   color: {r: 0.015686274, g: 0.62657034, b: 1, a: 0.35686275}
+  usePosAndScaleOfObject: 0
+  drawFilled: 1
+  drawWire: 0
   shape: 0
 --- !u!1 &4147501292504113263
 GameObject:
@@ -329,6 +332,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GizmoIndicator
   radius: 0.5
   color: {r: 0.01568627, g: 1, b: 0.2099669, a: 0.6}
+  usePosAndScaleOfObject: 0
+  drawFilled: 1
+  drawWire: 0
   shape: 1
 --- !u!1001 &3758473437960285295
 PrefabInstance:
@@ -378,6 +384,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4277760611513043768, guid: 3af1b266c96dcbe46b582094ff9aa54e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5b0fe048183779b409f7628f731b6aec, type: 2}
     - target: {fileID: 919132149155446097, guid: 3af1b266c96dcbe46b582094ff9aa54e, type: 3}
       propertyPath: m_Name
       value: Whiteclown N Hallin@Drunk Walk

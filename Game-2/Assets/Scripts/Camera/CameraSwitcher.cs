@@ -8,8 +8,8 @@ public class CameraSwitcher : MonoBehaviour
 
     [SerializeField, LabelText("Normal Gameplay Camera")] private CinemachineCamera gameplayCam;
     [SerializeField, LabelText("Player Target Group")] private Transform targetGroup;
-    [InfoBox("turns with X degrees per second")] [SerializeField, LabelText("Camera Turn Speed")] private float turnSpeed = 90f;
     private float targetYaw, currentYaw = 0;  // for rotation of camera by rotating the targetGroup [absolute values]
+    private float turnSpeed;
 
     private void Awake()
     {
@@ -28,9 +28,10 @@ public class CameraSwitcher : MonoBehaviour
             UpdateYaw();
     }
 
-    public void SetCameraTargetAngle(float yawAngle)
+    public void SetCameraTargetAngle(float yawAngle, float rotationSpeed)
     {
         targetYaw = yawAngle;
+        turnSpeed = rotationSpeed;  // set rotation speed
         GameManager.Instance?.CameraTurnAngle?.Invoke(yawAngle);
     }
 
