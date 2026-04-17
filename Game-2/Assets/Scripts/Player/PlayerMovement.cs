@@ -79,6 +79,8 @@ public class PlayerMovement : MonoBehaviour
 
         move.y = yVelocity;
 
+        transform.LookAt(pos+move);
+
         // make move only, when players are in the distance interval
         if(Vector3.Distance(otherPos, pos+move) < GameManager.Instance?.GetMaximumPlayerDistance())
             controller.Move(move);  // move with character controller (animator)

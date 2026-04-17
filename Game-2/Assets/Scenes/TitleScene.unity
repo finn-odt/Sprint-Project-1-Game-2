@@ -3179,7 +3179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f826c3fc4e2267a40ba4eb723ec3b722, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleScreenHandler
-  firstSceneName: SampleScene
+  firstSceneName: Main-Level
   actions: {fileID: -944628639613478452, guid: ef717ff1adfa48a45b26f3ff2b798c7f, type: 3}
   actionMapName: UI
 --- !u!4 &2082127130
