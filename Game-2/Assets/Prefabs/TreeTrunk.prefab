@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17bd4d787090b9e49a35ab02798231e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TreeTrunk
-  rb: {fileID: 0}
+  rb: {fileID: 2084161352850456654}
 --- !u!136 &8948653322109092780
 CapsuleCollider:
   m_ObjectHideFlags: 0
