@@ -1,4 +1,5 @@
 using System;
+using TriInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -6,16 +7,15 @@ using static UnityEngine.InputSystem.InputAction;
 
 public class TitleScreenHandler : MonoBehaviour
 {
-    [SerializeField] private string firstSceneName;
+    [SerializeField, LabelText("Scene Name after Title Screen")] private string firstSceneName;
 
     public void OnGameStart(CallbackContext context)
     {
-        Debug.Log("Test");
         SceneManager.LoadScene(firstSceneName);
     }
 
-    [SerializeField] private InputActionAsset actions;
-    [SerializeField] private string actionMapName = "UI";
+    [SerializeField, LabelText("Input Action Asset")] private InputActionAsset actions;
+    [SerializeField, LabelText("Action Map Name")] private string actionMapName = "UI";
 
     private InputActionMap inputMap;
     private InputAction startAction;

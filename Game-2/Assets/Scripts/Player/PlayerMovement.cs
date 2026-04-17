@@ -1,20 +1,23 @@
+using TriInspector;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] CharacterController controller;
-    private Vector2 moveDir;
+    [SerializeField, LabelText("Character Controller Component")] CharacterController controller;
+    private Vector2 moveDir = new Vector2(0, 0);
     private bool isCrouching = true;  // set false, if Game Over
 
-    [SerializeField] private float speed;
-    [SerializeField] private float pushPower;
+    [SerializeField, LabelText("Movement Speed")] private float speed;
+    [SerializeField, LabelText("Push Power")] private float pushPower;
     //[SerializeField] private float rotationSpeed;
+
+    [SerializeField, LabelText("Other Player Object")] private GameObject otherPlayer;
 
 
     // GRAVITY
-    [SerializeField] private float gravity = -20f;
+    [SerializeField, LabelText("Gravity")] private float gravity = -20f;
     private float yVelocity;
-
+    private float currentCameraTurnAngle = 0;
 
     public void SetMovement(Vector2 dir)
     {
@@ -57,9 +60,13 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("isWalking", false);
         */
         
+        // ------- CHECK DISTANCE TO OTHER PLAYER -------
+        Vector3 otherPos = otherPlayer.transform.position;
+        Vector3 pos = transform.position;
 
         // ------- MOVEMENT -------        
-        Vector3 dir = new Vector3(moveDir.x, 0, moveDir.y);  // remove height movement
+        Vector3 inputDir = new Vector3(moveDir.x, 0, moveDir.y);  // remove height movement
+        Vector3 dir = Quaternion.Euler(0f, currentCameraTurnAngle, 0f) * inputDir;  // turn controls according to camera
         dir.Normalize();  // normalize for better speed handling
 
         Vector3 move = dir * speed * Time.deltaTime;  // calculate movement
@@ -72,7 +79,34 @@ public class PlayerMovement : MonoBehaviour
 
         move.y = yVelocity;
 
-        //transform.position = transform.position + move;
-        controller.Move(move);  // move with character controller (animator)
+        // rotate in moving direction
+        Vector3 flatMove = new Vector3(move.x, 0f, move.z);
+        if (flatMove != Vector3.zero)
+        {
+            transform.LookAt(transform.position + flatMove);
+        }
+
+        // make move only, when players are in the distance interval
+        if(Vector3.Distance(otherPos, pos+move) < GameManager.Instance?.GetMaximumPlayerDistance())
+            controller.Move(move);  // move with character controller (animator)
+    }
+
+    private void Start()
+    {
+        if (GameManager.Instance != null) {
+            GameManager.Instance.CameraTurnAngle += OnCameraTurn;
+        }
+    }
+    
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null) {
+            GameManager.Instance.CameraTurnAngle -= OnCameraTurn;
+        }
+    }
+
+    private void OnCameraTurn(float angle)
+    {
+        currentCameraTurnAngle = angle;
     }
 }

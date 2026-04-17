@@ -6,6 +6,19 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    private DeviceConnection deviceConnection;
+
+    public DeviceConnection GetConnectionMode()
+    {
+        return deviceConnection;
+    }
+
+    public void SetConnectionMode(DeviceConnection mode)
+    {
+        deviceConnection = mode;
+    }
+
+    public Action ConnectionModeChanged;
 
     public static GameManager Instance;
     private GameState gameState = GameState.Intro;  // set to first game state
@@ -17,13 +30,22 @@ public class GameManager : MonoBehaviour
     }
     public Action<GameState> GameStateChanged;
 
-    [Unit("sec")] [SerializeField] private float gameTimer;
+    [Unit("sec")] [SerializeField, LabelText("Time to complete game")] private float gameTimer;
     private float usedTime = 0f;
     public Action<float, float> GameTimerUpdated;
 
     private float sanity = 1;
     public Action<float> SanityUpdated;
-    [SerializeField] private float sanityLimit = 0.05f;
+    [SerializeField, LabelText("Sanity Game Over Limit")] private float sanityLimit = 0.05f;
+    
+    [SerializeField, LabelText("Maximum Player Distance"), Range(5f, 50f)] private float maxPlayerDistance = 20;
+    
+    public Action<float> CameraTurnAngle;
+
+    public float GetMaximumPlayerDistance()
+    {
+        return maxPlayerDistance;
+    }
 
     public float GetSanity()
     {
@@ -31,7 +53,11 @@ public class GameManager : MonoBehaviour
     }
     private void DecreaseSanity()
     {
-        sanity -= sanityUpdateStep;
+        // calculate factor by distance of players
+        float dist = Vector3.Distance(playerObject1.transform.position, playerObject2.transform.position);
+        float playerDistanceFactor = dist / maxPlayerDistance;  // between 0 and 1
+
+        sanity -= sanityUpdateStep * playerDistanceFactor;
         SanityUpdated?.Invoke(sanity);
     }
 
@@ -39,15 +65,21 @@ public class GameManager : MonoBehaviour
 
     private bool arePlayersHoldingHands;
 
-    [Unit("sec")]
-    [SerializeField] private float sanityUpdateInterval = 1f;
-    [SerializeField] private float sanityUpdateStep = 1f;
+    [Unit("sec")] [SerializeField, LabelText("Sanity Update Interval")] private float sanityUpdateInterval = 1f;
+    [SerializeField, LabelText("Maximum Sanity Update Step Size")] private float sanityUpdateStep = 1f;
     private float sanityUpdateTimer;
+
+    public Action<bool> PlayerHandsConnected;
+
+    private GameObject playerObject1, playerObject2;
 
     public void SetPlayersHoldingHands(bool isHoldingHands)
     {
         if (arePlayersHoldingHands == isHoldingHands)
             return;
+
+        // if changed, invoke event
+        PlayerHandsConnected?.Invoke(isHoldingHands);
 
         arePlayersHoldingHands = isHoldingHands;
         sanityUpdateTimer = sanityUpdateInterval;  // set timer to interval, to execute instantly
@@ -62,7 +94,7 @@ public class GameManager : MonoBehaviour
         }
 
         // don't update timer, when paused/game over/won/intro-level
-        if(gameState == GameState.Playing) {
+        if(gameState == GameState.Playing) {  // TODO: remove Intro
             // if players are not holding hands, do sanity meter updates
             if(!arePlayersHoldingHands) {
                 sanityUpdateTimer += Time.deltaTime;
@@ -78,7 +110,19 @@ public class GameManager : MonoBehaviour
         // Check Loosing Condition
         if(sanity < sanityLimit || usedTime > gameTimer)
         {
-            gameState = GameState.Lose;
+            GameOver();
+        }
+    }
+
+    public void GameOver()
+    {
+        gameState = GameState.Lose;
+        GameStateChanged?.Invoke(gameState);
+    }
+    public void ChangeStateTo(GameState newState)
+    {
+        if(newState == GameState.Playing && gameState == GameState.Intro || gameState == GameState.Playing) {
+            gameState = newState;
             GameStateChanged?.Invoke(gameState);
         }
     }
@@ -101,6 +145,30 @@ public class GameManager : MonoBehaviour
         lastGameState = gameState;
         gameState = GameState.Pause;
         GameStateChanged?.Invoke(gameState);
+    }
+
+    public Action<int, int, bool> SkillCheck;
+    public Action SkillCheckFinished;
+    [Unit("sec")] [SerializeField, LabelText("Skill Check Failure Time Penalty")] private float skillCheckTimePenalty;
+    [SerializeField, LabelText("Skill Check Failure Sanity Penalty"), Range(0f, 1f)] private float skillCheckSanityPenalty;
+
+    public void TriggerSkillCheck(int playerIndex, bool triggeredByNPC)
+    {
+        int buttonIndex = UnityEngine.Random.Range(1, 4);  // random skill check button
+        SkillCheck?.Invoke(playerIndex, buttonIndex, triggeredByNPC);
+    }
+
+    public Action TimePenalty, SanityPenalty;
+    public void TakeTimeAway()
+    {
+        TimePenalty?.Invoke();
+        usedTime += skillCheckTimePenalty;
+    }
+
+    public void TakeSanityAway()
+    {
+        SanityPenalty?.Invoke();
+        sanity -= skillCheckSanityPenalty;
     }
 
 
@@ -129,17 +197,22 @@ public class GameManager : MonoBehaviour
         GameManager.Instance.PlayerGetsChased -= OnPlayerGetsChased;
     }
 
-    private void OnPlayerGetsChased()
-    {
-        Debug.Log("Player is being chased!");
-    }
-
     */
 
     private void Start()
     {
-        CameraSwitcher.Instance.SwitchToGameplay();
+        //CameraSwitcher.Instance.SwitchToGameplay();
         //CameraSwitcher.Instance.SwitchToOnShoulder();
+
+        //CameraSwitcher.Instance.SetCameraTargetAngle(90);
+
+        // get player instances
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        if(players.Length == 2)
+        {
+            playerObject1 = players[0];
+            playerObject2 = players[1];
+        }
     }
 
     private void Awake()

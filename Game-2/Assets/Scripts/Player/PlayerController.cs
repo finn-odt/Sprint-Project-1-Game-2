@@ -1,14 +1,33 @@
+using TriInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-
     private bool areHandsConnected = false;
-    public Material oldMaterial;
-    [SerializeField] private Material handIndicatorMaterial;
 
     private MeshRenderer meshRenderer;
+
+    private void Start()
+    {
+        if (GameManager.Instance != null) {
+            GameManager.Instance.PlayerHandsConnected += OnHandConnectionChange;
+        }
+    }
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null) {
+            GameManager.Instance.PlayerHandsConnected -= OnHandConnectionChange;
+        }
+    }
+
+    private void OnHandConnectionChange(bool handsConnected)
+    {
+        if(areHandsConnected && !handsConnected)
+        {
+            areHandsConnected = false;
+        }
+    }
     
     private void Awake()
     {
@@ -24,8 +43,9 @@ public class PlayerController : MonoBehaviour
         areHandsConnected = true;
         GameManager.Instance.SetPlayersHoldingHands(areHandsConnected);
         
-        oldMaterial = meshRenderer.material;
-        meshRenderer.material = handIndicatorMaterial;
+        // OPTIONAL: replace with animation of hand holding?
+        //oldMaterial = meshRenderer.material;
+        //meshRenderer.material = handIndicatorMaterial;
     }
 
     public void OnHandTriggerExit(Collider other)
@@ -36,6 +56,6 @@ public class PlayerController : MonoBehaviour
         areHandsConnected = false;
         GameManager.Instance.SetPlayersHoldingHands(areHandsConnected);
         
-        meshRenderer.material = oldMaterial;
+        //meshRenderer.material = oldMaterial;
     }
 }
