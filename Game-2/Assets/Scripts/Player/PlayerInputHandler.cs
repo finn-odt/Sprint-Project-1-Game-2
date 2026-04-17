@@ -259,9 +259,11 @@ public class PlayerInputHandler : MonoBehaviour
                 if(System.Array.IndexOf(allowedInteractionTags, hitTag) == -1)
                     continue;
 
-                // Trigger skill check for this player
-                int playerID = int.Parse(LayerMask.LayerToName(gameObject.layer).Replace("Player", ""));
-                GameManager.Instance.TriggerSkillCheck(playerID, false);
+                if(hitTag != "Wall" && hitTag != "Gate") {  // because animation starts to play instantly
+                    // Trigger skill check for this player
+                    int playerID = int.Parse(LayerMask.LayerToName(gameObject.layer).Replace("Player", ""));
+                    GameManager.Instance.TriggerSkillCheck(playerID, false);
+                }
 
                 // Set Animator parameters
                 switch(hitTag)
@@ -275,6 +277,7 @@ public class PlayerInputHandler : MonoBehaviour
                         break;
                     case "Wall":
                         animator.SetTrigger("Climb");
+                        StartCoroutine(TeleportBehindWall(hitColliders[i].gameObject));  // check for end of animation
                         break;
                     case "Narrow":
                         animator.SetBool("squeeze", true);
@@ -295,5 +298,42 @@ public class PlayerInputHandler : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         animator.SetBool(animtorParameter, false);
+    }
+
+    private IEnumerator TeleportBehindWall(GameObject walls)
+    {
+        yield return new WaitForSeconds(0.1f); // wait for 0.1s
+
+        while (animator != null)
+        {
+            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+
+            if (!animator.IsInTransition(0) && !state.IsName("climb"))
+            {
+                // climb animation is finished -> teleport behind wall
+                Vector3 dir = walls.transform.position - transform.position;  // from player to wall
+                dir.y = 0f;  // remove vertical movement
+
+                BoxCollider box = walls.GetComponent<BoxCollider>();
+                Vector3 dirNorm = dir.normalized;
+                // World-space half-axes of the box
+                Vector3 right = walls.transform.right * box.size.x * 0.5f * walls.transform.lossyScale.x;
+                Vector3 up    = walls.transform.up    * box.size.y * 0.5f * walls.transform.lossyScale.y;
+                Vector3 forward = walls.transform.forward * box.size.z * 0.5f * walls.transform.lossyScale.z;
+
+                // Project box half-extents onto direction
+                float halfWidthInDir =
+                    Mathf.Abs(Vector3.Dot(dirNorm, right)) +
+                    Mathf.Abs(Vector3.Dot(dirNorm, up)) +
+                    Mathf.Abs(Vector3.Dot(dirNorm, forward));
+
+                float widthInDir = halfWidthInDir * 2f;
+
+                transform.position += dir * 1.8f * widthInDir;
+                yield break;
+            }
+
+            yield return null;
+        }
     }
 }
