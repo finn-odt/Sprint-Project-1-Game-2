@@ -277,7 +277,7 @@ public class PlayerInputHandler : MonoBehaviour
                         break;
                     case "Wall":
                         animator.SetTrigger("Climb");
-                        StartCoroutine(TeleportBehindWall(hitColliders[i].gameObject));  // check for end of animation
+                        StartCoroutine(WaitForClimbToFinish(hitColliders[i].gameObject));  // check for end of animation
                         break;
                     case "Narrow":
                         animator.SetBool("squeeze", true);
@@ -300,26 +300,59 @@ public class PlayerInputHandler : MonoBehaviour
         animator.SetBool(animtorParameter, false);
     }
 
-    private IEnumerator TeleportBehindWall(GameObject walls)
+    private IEnumerator WaitForClimbToFinish(GameObject wall)
     {
         yield return new WaitForSeconds(0.3f); // wait for 0.3s
 
+        Vector3 playerPos = transform.position;
         while (animator != null)
         {
             AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
 
-            if (!animator.IsInTransition(0) && !state.IsName("climb"))
+            if(!animator.IsInTransition(0) && state.IsName("climb"))
             {
-                // climb animation is finished -> teleport behind wall
-                Vector3 dir = walls.transform.position - transform.position;  // from player to wall
-                dir.y = 0f;  // remove vertical movement
-                dir.Normalize();
-
-                transform.position += dir * 2f;
+                //MoveUpwards();
+            } else if (!animator.IsInTransition(0) && !state.IsName("climb"))
+            {
+                TeleportAfterWall(wall, playerPos);
                 yield break;
             }
 
             yield return null;
         }
+    }
+
+    private void MoveUpwards()
+    {
+        Vector3 pos = transform.position;
+        transform.position = pos + new Vector3(0, 0.4f, 0);
+    }
+
+    private void TeleportAfterWall(GameObject wall, Vector3 initialPlayerPos)
+    {
+        Renderer wallRenderer = wall.GetComponentInChildren<Renderer>();  // get only active ones
+        ClimbingWall wallScript = wall.GetComponentInChildren<ClimbingWall>();  // get only active ones
+        if(wallRenderer != null && wallScript != null)
+        {
+            Vector3 size = wallRenderer.bounds.size;
+            Vector3 dir = wallScript.WorldDirection;
+            dir.y = 0f;  // remove vertical movement
+            dir.Normalize();
+
+            float directionDimension =
+                Mathf.Abs(dir.x) * size.x +
+                Mathf.Abs(dir.y) * size.y +
+                Mathf.Abs(dir.z) * size.z;
+            
+
+            // climb animation is finished -> teleport on top of wall
+            Vector3 newPos = initialPlayerPos + dir * directionDimension * 0.5f;
+            // place player on top of wall
+            newPos.y = wallRenderer.bounds.max.y + 0.6f;
+
+            transform.position = newPos;
+        }
+
+
     }
 }
