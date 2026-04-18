@@ -70,6 +70,7 @@ MonoBehaviour:
   targetAngle: 90
   triggerLayerPlayer1: Player1
   triggerLayerPlayer2: Player2
+  turnSpeed: 90
 --- !u!114 &6979349232145533084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,4 +88,5 @@ MonoBehaviour:
   usePosAndScaleOfObject: 1
   drawFilled: 1
   drawWire: 1
+  drawOnlyOnSelect: 1
   shape: 0

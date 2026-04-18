@@ -37,6 +37,7 @@ public class AudioSourceHandler : MonoBehaviour
 
         trigger.TriggerEntered += OnTriggerEnter;
         trigger.TriggerExited += OnTriggerExit;
+        trigger.TriggerStays += OnTriggerStay;
     }
 
     private void OnDisable()
@@ -46,6 +47,7 @@ public class AudioSourceHandler : MonoBehaviour
 
         trigger.TriggerEntered -= OnTriggerEnter;
         trigger.TriggerExited -= OnTriggerExit;
+        trigger.TriggerStays -= OnTriggerStay;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -57,6 +59,17 @@ public class AudioSourceHandler : MonoBehaviour
 
         if (enterCounter == 1)
             Fade(true);  // fade in
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (!other.CompareTag(playerTag) || (hasPlayedOnce && playOnlyOnce))
+            return;
+
+        if (enterCounter == 0) {
+            enterCounter++;
+            Fade(true);  // fade in
+        }
     }
 
     private void OnTriggerExit(Collider other)

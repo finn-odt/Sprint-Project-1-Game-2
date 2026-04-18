@@ -72,6 +72,7 @@ MonoBehaviour:
   usePosAndScaleOfObject: 1
   drawFilled: 1
   drawWire: 1
+  drawOnlyOnSelect: 1
   shape: 0
 --- !u!114 &5916588658552732733
 MonoBehaviour:

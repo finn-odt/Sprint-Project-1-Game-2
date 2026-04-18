@@ -9,6 +9,7 @@ public class GizmoIndicator : MonoBehaviour
     [SerializeField] private bool usePosAndScaleOfObject = false;
     [SerializeField] private bool drawFilled = true;
     [SerializeField] private bool drawWire = false;
+    [SerializeField] private bool drawOnlyOnSelect = false;
 
     public enum ShapeType
     {
@@ -20,6 +21,53 @@ public class GizmoIndicator : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if(drawOnlyOnSelect)
+            return;
+
+        Gizmos.color = color;  // set color
+
+        // draw filled gizmos
+        if(drawFilled)
+        {
+            if(usePosAndScaleOfObject)
+            {
+                Gizmos.matrix = transform.localToWorldMatrix;
+                if(shape == ShapeType.Cube)
+                    Gizmos.DrawCube(Vector3.zero, Vector3.one);
+                else if(shape == ShapeType.Sphere)
+                    Gizmos.DrawSphere(Vector3.zero, 1);
+            } else {
+                if(shape == ShapeType.Cube)
+                    Gizmos.DrawCube(transform.position, new Vector3(radius*2, radius*2, radius*2));
+                else if(shape == ShapeType.Sphere)
+                    Gizmos.DrawSphere(transform.position, radius);
+            }
+        }
+
+        // draw filled gizmos
+        if(drawWire)
+        {
+            if(usePosAndScaleOfObject)
+            {
+                Gizmos.matrix = transform.localToWorldMatrix;
+                if(shape == ShapeType.Cube)
+                    Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+                else if(shape == ShapeType.Sphere)
+                    Gizmos.DrawWireSphere(Vector3.zero, 1);
+            } else {
+                if(shape == ShapeType.Cube)
+                    Gizmos.DrawWireCube(transform.position, new Vector3(radius*2, radius*2, radius*2));
+                else if(shape == ShapeType.Sphere)
+                    Gizmos.DrawWireSphere(transform.position, radius);
+            }
+        }
+    }
+    
+    private void OnDrawGizmosSelected()
+    {
+        if(!drawOnlyOnSelect)
+            return;
+
         Gizmos.color = color;  // set color
 
         // draw filled gizmos
