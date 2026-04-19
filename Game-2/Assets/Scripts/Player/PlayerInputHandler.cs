@@ -30,6 +30,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private bool isControllable = true;  // set false, if Game Over
     private bool skillCheckActive = false;  // set true, when skill check event is triggered
+    private Coroutine skillCheckTimerRoutine;
 
     private void Start()
     {
@@ -62,31 +63,35 @@ public class PlayerInputHandler : MonoBehaviour
         InteractionCollisionDetection();
 
         if(skillCheckActive)
-        { 
-            Debug.Log("Necessary-Button-Index: " + skillButtonIndexToPress);
+        {
             // were multiple or the wrong buttons pressed -> failure
             if(CountPressedSkillButtons() > 1 || (CountPressedSkillButtons() > 0 && !CheckForSkillButtonPress()))
             {
-                if(skillCheckTriggeredByNPC)
-                    GameManager.Instance.TakeSanityAway();
-                else
-                    GameManager.Instance.TakeTimeAway();
-
-                DeactivateSkillCheck();
+                DeactivateSkillCheck(false);
             } else if(CheckForSkillButtonPress()) {  // was correct button pressed?
-                DeactivateSkillCheck();
+                DeactivateSkillCheck(true);
             }
         }
+        // TODO: deactivate after time
     }
 
-    private void DeactivateSkillCheck()
+    private void DeactivateSkillCheck(bool success)
     {
+        skillCheckTimerRoutine = null;
         GameManager.Instance.SkillCheckFinished?.Invoke();  // trigger end of skill check
 
-        Debug.Log("Skill Check End");
-        skillCheck1Count = skillCheck2Count = skillCheck3Count = 0;
         skillCheckActive = false;
         isControllable = true;
+        
+        if(!success)
+        {
+            if(skillCheckTriggeredByNPC)
+                GameManager.Instance.TakeSanityAway();
+            else
+                GameManager.Instance.TakeTimeAway();
+        }
+
+        skillCheck1Count = skillCheck2Count = skillCheck3Count = 0;
     }
 
     private bool CheckForSkillButtonPress()
@@ -131,6 +136,18 @@ public class PlayerInputHandler : MonoBehaviour
         skillCheckActive = true;
         skillButtonIndexToPress = buttonIndex;
         skillCheckTriggeredByNPC = triggeredByNPC;
+
+        if(skillCheckTimerRoutine != null)
+            StopCoroutine(skillCheckTimerRoutine);
+
+        skillCheckTimerRoutine = StartCoroutine(SkillCheckTimer());
+    }
+
+    private IEnumerator SkillCheckTimer()
+    {
+        yield return new WaitForSeconds(GameManager.Instance.GetTimeForSkillCheck());
+        if(skillCheckTimerRoutine != null)
+            DeactivateSkillCheck(false);  // no success, when timer is over
     }
 
     private void OnSkillCheck1Input(CallbackContext context)

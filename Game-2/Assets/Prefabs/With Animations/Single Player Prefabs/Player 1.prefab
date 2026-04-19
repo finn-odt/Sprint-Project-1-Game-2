@@ -202,7 +202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   controller: {fileID: 3460550891164018432}
-  speed: 5
+  speed: 2
   pushPower: 1
   otherPlayer: {fileID: 0}
   gravity: -20

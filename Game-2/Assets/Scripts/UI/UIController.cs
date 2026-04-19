@@ -13,12 +13,14 @@ public class UIController : MonoBehaviour
     [SerializeField, LabelText("Sanity UI-Slider")] private Slider sanitySlider;
     [SerializeField, LabelText("Interaction Indicator")] private GameObject interactionIndicator;
     [SerializeField, LabelText("Skill Check Indicator")] private GameObject skillCheckIndicator;
+    [SerializeField, LabelText("Skill Check Time Ring")] private Image skillCheckTimeRing;
 
     [SerializeField, LabelText("Gameplay Canvas")] private Canvas gameCanvas;
     [SerializeField, LabelText("Pause Menu Canvas")] private Canvas pauseCanvas;
     [SerializeField, LabelText("Game Over Canvas")] private Canvas gameOverCanvas;
     [SerializeField, LabelText("Win Canvas")] private Canvas winCanvas;
     [SerializeField, LabelText("Connection Mode Tags")] private string[] connectionModeTags;
+    private Coroutine skillCheckTimerRoutine;
 
     private void Start()
     {
@@ -44,6 +46,9 @@ public class UIController : MonoBehaviour
         // deactivate indicators
         interactionIndicator.SetActive(false);
         skillCheckIndicator.SetActive(false);
+        // deactivate and initialize time ring
+        skillCheckTimeRing.fillAmount = 1f;
+        skillCheckTimeRing.gameObject.SetActive(false);
 
         // deactivate sanity slider at first
         sanitySlider.gameObject.SetActive(false);
@@ -176,7 +181,7 @@ public class UIController : MonoBehaviour
 
         // place indicator over player
         skillCheckIndicator.SetActive(true);
-        skillCheckIndicator.transform.localPosition = GetScreenCoordinatesOfPlayer(wantedPlayer.transform.position, new Vector3(0, 1f, 0));
+        skillCheckIndicator.transform.parent.transform.localPosition = GetScreenCoordinatesOfPlayer(wantedPlayer.transform.position, new Vector3(0, 1f, 0));
 
         // show just the button that is needed
         int i = 1;
@@ -184,14 +189,41 @@ public class UIController : MonoBehaviour
         int modifiedButtonIndex = ((playerIndex - 1) * 3) + buttonIndex;
         foreach (Transform child in skillCheckIndicator.transform)
         {
-            child.gameObject.SetActive(i == modifiedButtonIndex);
-            i++;
+            if(child.gameObject.activeSelf) {
+                child.gameObject.SetActive(i == modifiedButtonIndex);
+                i++;
+            }
         }
+
+        // activate timer ring
+        if(skillCheckTimerRoutine != null)
+            StopCoroutine(skillCheckTimerRoutine);
+
+        skillCheckTimerRoutine = StartCoroutine(DisplaySkillCheckTimer());
+    }
+
+    private IEnumerator DisplaySkillCheckTimer()
+    {
+        skillCheckTimeRing.gameObject.SetActive(true);
+        yield return null;  // wait for one frame
+        if(skillCheckTimerRoutine != null) {
+            float totalTime = GameManager.Instance.GetTimeForSkillCheck();
+
+            for(int i = 0; i < 100; i++) {
+                skillCheckTimeRing.fillAmount = Mathf.Clamp01(1 - i / 100f);
+                yield return new WaitForSeconds(totalTime / 100f);
+            }
+        }
+        // hide timer ring
+        skillCheckTimeRing.gameObject.SetActive(false);
     }
 
     private void OnSkillCheckExit()
     {
         skillCheckIndicator.SetActive(false);
+        skillCheckTimeRing.gameObject.SetActive(false);
+        skillCheckTimeRing.fillAmount = 1;
+        skillCheckTimerRoutine = null;
     }
 
     private Vector2 GetScreenCoordinatesOfPlayer(Vector3 position, Vector3 offset)

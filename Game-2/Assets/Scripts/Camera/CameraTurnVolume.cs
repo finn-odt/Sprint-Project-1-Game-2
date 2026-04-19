@@ -31,6 +31,14 @@ public class CameraTurnVolume : MonoBehaviour
             player2Detected = true;
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        if(other.gameObject.layer == LayerMask.NameToLayer(triggerLayerPlayer1))
+            player1Detected = true;
+        if(other.gameObject.layer == LayerMask.NameToLayer(triggerLayerPlayer2))
+            player2Detected = true;
+    }
+
     private void OnTriggerExit(Collider other)
     {
         if(other.gameObject.layer == LayerMask.NameToLayer(triggerLayerPlayer1))

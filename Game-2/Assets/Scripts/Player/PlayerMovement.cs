@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, LabelText("Push Power")] private float pushPower;
     //[SerializeField] private float rotationSpeed;
 
-    [SerializeField, LabelText("Other Player Object")] private GameObject otherPlayer;
+    [SerializeField, LabelText("Other Player Object")] public GameObject otherPlayer;
 
 
     // GRAVITY

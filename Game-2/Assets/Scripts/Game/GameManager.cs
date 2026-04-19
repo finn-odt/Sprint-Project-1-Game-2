@@ -148,6 +148,11 @@ public class GameManager : MonoBehaviour
     }
 
     public Action<int, int, bool> SkillCheck;
+    [SerializeField] private float timeForSkillCheck;
+    public float GetTimeForSkillCheck()
+    {
+        return timeForSkillCheck;
+    }
     public Action SkillCheckFinished;
     [Unit("sec")] [SerializeField, LabelText("Skill Check Failure Time Penalty")] private float skillCheckTimePenalty;
     [SerializeField, LabelText("Skill Check Failure Sanity Penalty"), Range(0f, 1f)] private float skillCheckSanityPenalty;

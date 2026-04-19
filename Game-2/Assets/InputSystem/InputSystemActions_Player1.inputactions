@@ -206,7 +206,7 @@
                 {
                     "name": "",
                     "id": "f6ca8b5d-ef53-4158-8970-a39f8faa3d94",
-                    "path": "<Keyboard>/y",
+                    "path": "<Keyboard>/#(Y)",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",

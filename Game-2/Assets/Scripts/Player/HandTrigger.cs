@@ -17,6 +17,12 @@ public class HandTrigger : MonoBehaviour
             playerController.OnHandTriggerEnter(other);
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        if(other.gameObject.layer == LayerMask.NameToLayer(triggerLayer))  // if collider other player
+            playerController.OnHandTriggerStay(other);
+    }
+
     private void OnTriggerExit(Collider other)
     {
         if(other.gameObject.layer == LayerMask.NameToLayer(triggerLayer))  // if collider other player
