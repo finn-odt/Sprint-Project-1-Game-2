@@ -73,6 +73,8 @@ public class GameManager : MonoBehaviour
 
     private GameObject playerObject1, playerObject2;
 
+    public Action<int, bool> PlayerControllable;  //Player-Index, isControllable
+
     public void SetPlayersHoldingHands(bool isHoldingHands)
     {
         if (arePlayersHoldingHands == isHoldingHands)

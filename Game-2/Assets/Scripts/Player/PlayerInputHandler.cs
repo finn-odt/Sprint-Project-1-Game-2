@@ -14,7 +14,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     [SerializeField, LabelText("Player Input Action Asset")] private InputActionAsset actions;
     [SerializeField, LabelText("Action Map Name")] private string actionMapName = "Player";
-    [SerializeField, LabelText("Player-Index"), Range(1, 2)] private int _playerIndex = 0;
+    [SerializeField, LabelText("Player-Index"), Range(1, 2)] public int playerIndex = 1;
     [SerializeField, LabelText("Allowed Interaction Tags")] private string[] allowedInteractionTags;
 
     private InputActionMap inputMap;
@@ -34,11 +34,14 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void Start()
     {
-        if (GameManager.Instance != null) {
+        if(GameManager.Instance != null) {
             GameManager.Instance.GameStateChanged += OnGameStateChange;
 
             GameManager.Instance.SkillCheck += OnSkillCheck;
+
+            GameManager.Instance.PlayerControllable += OnPlayerControlChange;
         }
+
         animator = GetComponentInChildren<Animator>();
     }
 
@@ -60,7 +63,13 @@ public class PlayerInputHandler : MonoBehaviour
 
     void Update()
     {
-        InteractionCollisionDetection();
+        if(isControllable) {
+            InteractionCollisionDetection();
+            playerMovement.externalMovement = false;
+        } else
+        {
+            playerMovement.externalMovement = true;
+        }
 
         if(skillCheckActive)
         {
@@ -81,7 +90,6 @@ public class PlayerInputHandler : MonoBehaviour
         GameManager.Instance.SkillCheckFinished?.Invoke();  // trigger end of skill check
 
         skillCheckActive = false;
-        isControllable = true;
         
         if(!success)
         {
@@ -129,10 +137,9 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnSkillCheck(int playerIndex, int buttonIndex, bool triggeredByNPC)
     {
-        if(playerIndex != _playerIndex)
+        if(playerIndex != playerIndex)
             return;  // ignore, if Skill Check is for other player
 
-        isControllable = false;
         skillCheckActive = true;
         skillButtonIndexToPress = buttonIndex;
         skillCheckTriggeredByNPC = triggeredByNPC;
@@ -193,16 +200,26 @@ public class PlayerInputHandler : MonoBehaviour
 
         inputMap.Disable();
 
-        if (GameManager.Instance != null) {
+        if(GameManager.Instance != null) {
             GameManager.Instance.GameStateChanged -= OnGameStateChange;
 
             GameManager.Instance.SkillCheck -= OnSkillCheck;
+
+            GameManager.Instance.PlayerControllable -= OnPlayerControlChange;
         }
+    }
+
+    private void OnPlayerControlChange(int playerID, bool isControllable)
+    {
+        if(playerIndex != playerID || isControllable == this.isControllable)
+            return;
+
+        this.isControllable = isControllable;
     }
 
     public void OnMove(CallbackContext context)
     {
-        if(!isControllable) {
+        if(!isControllable || skillCheckActive) {
             playerMovement.SetMovement(Vector2.zero);
         } else {
             Vector2 dir = context.ReadValue<Vector2>();
@@ -218,7 +235,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     public void OnInteract(CallbackContext context)
     {
-        if(!isControllable)
+        if(!isControllable || skillCheckActive)
             return;
 
         StartInteraction();  // returns true, if interaction was started

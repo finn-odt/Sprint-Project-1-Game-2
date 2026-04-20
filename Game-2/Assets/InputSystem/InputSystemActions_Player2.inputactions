@@ -131,7 +131,7 @@
                 {
                     "name": "",
                     "id": "de590f7b-4a24-48bc-86d9-1076b6834f25",
-                    "path": "<Keyboard>/minus",
+                    "path": "<Keyboard>/#(-)",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",

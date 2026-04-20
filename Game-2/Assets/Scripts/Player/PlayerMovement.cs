@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     private float yVelocity;
     private float currentCameraTurnAngle = 0;
 
+    public bool externalMovement = false;
+
     public void SetMovement(Vector2 dir)
     {
         moveDir = dir;
@@ -52,6 +54,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if(externalMovement)
+            return;
         // ------- ANIMATOR -------
         /*
         if(isControllable && moveDir != Vector2.zero) 
