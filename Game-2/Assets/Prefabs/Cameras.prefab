@@ -195,6 +195,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1076764238538647138}
+  - component: {fileID: 4692083068701298406}
   - component: {fileID: 525754527297195599}
   - component: {fileID: 8868789835270860779}
   - component: {fileID: 2283274125166971956}
@@ -221,6 +222,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3418456886940239629}
   m_LocalEulerAnglesHint: {x: 8.9, y: 0, z: 0}
+--- !u!114 &4692083068701298406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4701713374038973566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ce356420f66bc647923e5e758dfee1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraSwitcher
+  gameplayCam: {fileID: 124059348954480527}
+  targetGroup: {fileID: 4141099207076422766}
 --- !u!20 &525754527297195599
 Camera:
   m_ObjectHideFlags: 0
@@ -356,52 +371,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
---- !u!1 &6657922604073823124
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1058972371618520959}
-  - component: {fileID: 1466121358994685199}
-  m_Layer: 0
-  m_Name: CameraSwitcher
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1058972371618520959
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6657922604073823124}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.6254997, y: -0.66274, z: -2.1589699}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3418456886940239629}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1466121358994685199
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6657922604073823124}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ce356420f66bc647923e5e758dfee1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraSwitcher
-  gameplayCam: {fileID: 124059348954480527}
-  targetGroup: {fileID: 4141099207076422766}
 --- !u!1 &7416771942107019711
 GameObject:
   m_ObjectHideFlags: 0
@@ -434,6 +403,5 @@ Transform:
   - {fileID: 1076764238538647138}
   - {fileID: 8783112121221158254}
   - {fileID: 4141099207076422766}
-  - {fileID: 1058972371618520959}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
